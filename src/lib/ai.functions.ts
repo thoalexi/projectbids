@@ -51,6 +51,7 @@ export const compareBids = createServerFn({ method: "POST" })
           `Duration: ${b.duration_days ?? "?"} days; Earliest start: ${b.earliest_start ?? "?"}; Warranty: ${b.warranty || "none stated"}`,
           `Licensed & insured: ${b.insured ? "yes" : "not stated / no"}`,
           `Note: ${b.message}`,
+          ...(Array.isArray(b.question_answers) ? (b.question_answers as { question?: string; answer?: string }[]).map((qa) => `Q: ${qa.question} A: ${qa.answer}`) : []),
         ].join("\n"),
       )
       .join("\n\n");
@@ -60,7 +61,7 @@ export const compareBids = createServerFn({ method: "POST" })
     });
     const out = await aiJson(
       z4.object({ bids: z4.array(row), warnings: z4.array(z4.string()) }),
-      "You normalize contractor bids so a homeowner can compare them fairly. Return one row per bid, in the same order. Use short cell values: dollar totals like \"$3,150\", \"Included\", \"Extra $250\", \"Not mentioned\", \"✓\", \"2 days\", \"Oct 19\", \"2 yr\". Then list warnings for gaps or differences that matter (e.g. \"Bid 2 (Name) does not include disposal.\"). Refer to bids by contractor name. Max 5 warnings, each under 20 words.",
+      "You normalize contractor bids so a homeowner can compare them fairly. Return one row per bid, in the same order. Use short cell values: dollar totals like \"$3,150\", \"Included\", \"Extra $250\", \"Not mentioned\", \"✓\", \"2 days\", \"Oct 19\", \"2 yr\". Then list warnings for gaps or differences that matter (e.g. \"Bid 2 (Name) does not include disposal.\"). Refer to bids by contractor name. Also flag answers to the homeowner's questions that differ or are missing. Max 5 warnings, each under 20 words.",
       `Project: ${p.title} (${p.category})\n${p.description}\n\n${text}`,
     );
     const comparison: Comparison = {

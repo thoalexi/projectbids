@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { ProjectForm } from "@/components/ProjectForm";
 import { projectQuery, resolveImage } from "@/lib/projects";
-import { toAnswers } from "@/lib/questions";
+import { toAnswers, toOwnerQuestions } from "@/lib/questions";
 
 export const Route = createFileRoute("/edit/$id")({
   head: () => ({
@@ -54,7 +54,7 @@ function EditProject() {
       <p className="mt-2 text-muted-foreground">You can make changes until the first bid arrives.</p>
       <ProjectForm
         userId={user!.id}
-        initial={{ ...project, answers: toAnswers(project.answers), budget_min: project.budget_min, budget_max: project.budget_max }}
+        initial={{ ...project, answers: toAnswers(project.answers), budget_min: project.budget_min, budget_max: project.budget_max, owner_questions: toOwnerQuestions(project.owner_questions) }}
         initialPreview={preview ?? null}
         submitLabel="Save changes"
         busyLabel="Saving…"

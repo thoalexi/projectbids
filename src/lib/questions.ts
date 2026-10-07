@@ -14,3 +14,10 @@ export function toAnswers(v: unknown): Answers {
   if (!v || typeof v !== "object" || Array.isArray(v)) return {};
   return Object.fromEntries(Object.entries(v as Record<string, unknown>).filter(([, x]) => typeof x === "string")) as Answers;
 }
+
+export const MAX_OWNER_QUESTIONS = 5;
+
+/** Homeowner's own questions that every bidder must answer. */
+export function toOwnerQuestions(v: unknown): string[] {
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.trim().length > 0) : [];
+}

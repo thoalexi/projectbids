@@ -13,7 +13,7 @@ import { ProjectImage } from "@/components/ProjectImage";
 import { formatBudget, formatDate, formatMoney, MAX_BIDS, projectQuery } from "@/lib/projects";
 import { BidComparison, FollowUpStep, toAiQuestions } from "@/components/ProjectAi";
 import type { Comparison } from "@/lib/ai.functions";
-import { QUESTIONS, toAnswers } from "@/lib/questions";
+import { QUESTIONS, toAnswers, toOwnerQuestions } from "@/lib/questions";
 
 export const Route = createFileRoute("/projects/$id")({
   head: () => ({
@@ -55,6 +55,9 @@ function safeUrl(u: string | null | undefined) {
 function toPhotos(v: unknown): string[] {
   return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
 }
+function toQA(v: unknown): { question: string; answer: string }[] {
+  return Array.isArray(v) ? v.filter((x) => x && typeof x.question === "string").map((x) => ({ question: x.question, answer: String(x.answer ?? "") })) : [];
+}
 
 function initials(name: string) {
   return name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
@@ -74,6 +77,7 @@ function ProjectDetail() {
   const [lightbox, setLightbox] = useState<string | null>(null);
   const [trade, setTrade] = useState("");
   const [busy, setBusy] = useState(false);
+  const [qAnswers, setQAnswers] = useState<string[]>([]);
 
   // Prefill credentials from the contractor's most recent bid.
   useEffect(() => {
@@ -118,6 +122,7 @@ function ProjectDetail() {
   const full = total >= MAX_BIDS;
   const budget = formatBudget(project.budget_min, project.budget_max);
   const aiQs = toAiQuestions(project.ai_questions).filter((q) => q.answer);
+  const ownerQs = toOwnerQuestions(project.owner_questions);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["project", id] });
@@ -155,6 +160,9 @@ function ProjectDetail() {
     if (!user) return;
     const parsed = bidSchema.safeParse({ amount: hasBreakdown ? breakdownSum : amount, message, ...extra, ...creds, earliest_start: extra.earliest_start || null });
     if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message);
+    const unanswered = ownerQs.findIndex((_, i) => !(qAnswers[i] ?? "").trim());
+    if (unanswered >= 0) return void toast.error(`Please answer: ${ownerQs[unanswered]}`);
+    const question_answers = ownerQs.map((q, i) => ({ question: q, answer: (qAnswers[i] ?? "").trim().slice(0, 500) }));
     setBusy(true);
     const { error } = await supabase.from("bids").insert({
       project_id: id,
@@ -175,6 +183,7 @@ function ProjectDetail() {
       yelp_url: parsed.data.yelp_url,
       thumbtack_url: parsed.data.thumbtack_url,
       portfolio_images: photos,
+      question_answers,
     });
     setBusy(false);
     if (error) return void toast.error(error.message.includes("full") ? "Sorry — this project already has 5 bids." : "Couldn't send your bid. Try again.");
@@ -231,6 +240,14 @@ function ProjectDetail() {
                     </div>
                   ))}
                 </dl>
+              )}
+              {ownerQs.length > 0 && (
+                <div className="mt-4 text-sm">
+                  <p className="text-xs text-muted-foreground">Homeowner's questions for contractors</p>
+                  <ul className="mt-1 list-disc space-y-0.5 pl-5 font-medium">
+                    {ownerQs.map((q, i) => <li key={i}>{q}</li>)}
+                  </ul>
+                </div>
               )}
               {aiQs.length > 0 && (
                 <dl className="mt-4 grid gap-y-2 text-sm">
@@ -308,6 +325,16 @@ function ProjectDetail() {
                             </button>
                           ))}
                         </div>
+                      )}
+                      {toQA(b.question_answers).length > 0 && (
+                        <dl className="mt-2 space-y-1 text-xs">
+                          {toQA(b.question_answers).map((qa, i) => (
+                            <div key={i}>
+                              <dt className="text-muted-foreground">{qa.question}</dt>
+                              <dd className="font-medium">{qa.answer}</dd>
+                            </div>
+                          ))}
+                        </dl>
                       )}
                       <p className="mt-0.5 text-[11px] text-muted-foreground">Final quote subject to site inspection.</p>
                     </div>
@@ -458,6 +485,24 @@ function ProjectDetail() {
                   <span className="text-xs font-medium text-muted-foreground">Your trade (optional)</span>
                   <input value={trade} onChange={(e) => setTrade(e.target.value)} maxLength={60} placeholder={project.category} className="field mt-1.5" />
                 </label>
+                {ownerQs.length > 0 && (
+                  <div className="rounded-xl bg-primary/5 p-3 ring-1 ring-primary/20">
+                    <p className="text-sm font-medium">Please answer the following questions the homeowner had:</p>
+                    <div className="mt-3 space-y-3">
+                      {ownerQs.map((q, i) => (
+                        <label key={i} className="block">
+                          <span className="text-xs font-medium text-muted-foreground">{q}</span>
+                          <input
+                            value={qAnswers[i] ?? ""}
+                            maxLength={500}
+                            onChange={(e) => setQAnswers((a) => { const n = [...a]; n[i] = e.target.value; return n; })}
+                            className="field mt-1.5"
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <label className="block">
                   <span className="text-xs font-medium text-muted-foreground">Message</span>
                   <textarea
