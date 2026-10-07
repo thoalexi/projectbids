@@ -79,6 +79,7 @@ export type Database = {
       projects: {
         Row: {
           accepted_bid_id: string | null
+          answers: Json
           category: string
           created_at: string
           description: string
@@ -93,6 +94,7 @@ export type Database = {
         }
         Insert: {
           accepted_bid_id?: string | null
+          answers?: Json
           category: string
           created_at?: string
           description: string
@@ -107,6 +109,7 @@ export type Database = {
         }
         Update: {
           accepted_bid_id?: string | null
+          answers?: Json
           category?: string
           created_at?: string
           description?: string
