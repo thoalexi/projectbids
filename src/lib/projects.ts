@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Tables } from "@/integrations/supabase/types";
 
-type WithCount = { bid_count: number };
+type WithCount = { bid_count: number; owner_verified?: boolean };
 
 export const CATEGORIES = [
   "Interior/exterior painting",
@@ -35,7 +35,7 @@ export const projectsQuery = () =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("*, bid_count" as "*")
+        .select("*, bid_count, owner_verified" as "*")
         .eq("status", "open")
         .order("created_at", { ascending: false });
       if (error) throw error;
@@ -49,14 +49,14 @@ export const projectQuery = (id: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("*, bid_count" as "*")
+        .select("*, bid_count, owner_verified" as "*")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
-      const { data: bids, error: bidsError } = await supabase.from("bids").select("*").eq("project_id", id);
+      const { data: bids, error: bidsError } = await supabase.from("bids").select("*, contractor_verified" as "*").eq("project_id", id);
       if (bidsError) throw bidsError;
-      return { ...data, bid_count: (data as typeof data & Partial<WithCount>).bid_count ?? bids?.length ?? 0, bids: bids ?? [] };
+      return { ...data, bid_count: (data as typeof data & Partial<WithCount>).bid_count ?? bids?.length ?? 0, bids: (bids ?? []) as (Tables<"bids"> & { contractor_verified?: boolean })[] };
     },
   });
 

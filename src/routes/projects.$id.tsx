@@ -18,6 +18,7 @@ import { PaymentMethodSetup } from "@/components/PaymentMethodSetup";
 import { acceptBidAndChargeFee, createBidCardSetup, getProjectPaymentReadiness, submitBidWithPaymentMethod } from "@/lib/payments.functions";
 import { formatFee, successFeeCents } from "@/lib/fees";
 import { getStripeEnvironment } from "@/lib/stripe";
+import { useMyVerification } from "@/lib/verification";
 
 export const Route = createFileRoute("/projects/$id")({
   head: () => ({
@@ -85,6 +86,7 @@ function ProjectDetail() {
   const [busy, setBusy] = useState(false);
   const [qAnswers, setQAnswers] = useState<string[]>([]);
   const [setupSecret, setSetupSecret] = useState<string | null>(null);
+  const verification = useMyVerification();
   const [pendingBid, setPendingBid] = useState<Parameters<typeof submitBidWithPaymentMethod>[0]["data"] | null>(null);
 
   // Prefill credentials from the contractor's most recent bid.
@@ -249,7 +251,10 @@ function ProjectDetail() {
               </span>
               <h1 className="font-display mt-1 text-balance text-3xl">{project.title}</h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Posted by {project.owner_name} · wanted by {formatDate(project.desired_date)}
+                Posted by {project.owner_name}
+                {project.owner_verified && <span className="ml-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold text-success ring-1 ring-success">Verified Homeowner</span>}
+                {project.contractor_requirement === "verified_only" && <span className="ml-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold text-primary ring-1 ring-primary">Verified Pros only</span>}
+                {" "}· wanted by {formatDate(project.desired_date)}
                 {budget && ` · budget ${budget}`}
               </p>
               <p className="mt-3 max-w-[60ch] text-pretty text-sm leading-relaxed text-secondary-foreground">
@@ -311,6 +316,7 @@ function ProjectDetail() {
                       <p className="truncate text-sm font-semibold">
                         {b.contractor_name}
                         {b.trade && ` · ${b.trade}`}
+                        {b.contractor_verified && <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary ring-1 ring-primary">Verified Pro</span>}
                         <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${b.insured ? "text-success ring-success" : "text-muted-foreground ring-border"}`}>
                           {b.insured ? "Insured" : "Not insured"}
                         </span>
@@ -420,6 +426,18 @@ function ProjectDetail() {
             <>
               <h2 className="text-lg font-semibold">You've bid {formatMoney(Number(myBid.amount))}</h2>
               <p className="mt-1 text-sm text-muted-foreground">The homeowner will pick a bid soon.</p>
+            </>
+          ) : project.contractor_requirement === "verified_only" && verification.status !== "approved" ? (
+            <>
+              <h2 className="text-lg font-semibold">Verified Pros only</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {verification.status === "pending_review"
+                  ? "Your Verified Pro application is being reviewed. You can bid here once it's approved."
+                  : "This homeowner only takes bids from Verified Pros. Share your past work, reviews and insurance to apply — it's a one-time $5 fee."}
+              </p>
+              {verification.status !== "pending_review" && (
+                <Button asChild className="mt-5 w-full"><Link to="/verify">Get verified — $5</Link></Button>
+              )}
             </>
           ) : full ? (
             <>

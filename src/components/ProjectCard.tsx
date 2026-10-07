@@ -14,6 +14,8 @@ type Props = {
     bid_count: number | null;
     budget_min: number | null;
     budget_max: number | null;
+    contractor_requirement?: string;
+    owner_verified?: boolean;
   };
 };
 
@@ -38,6 +40,12 @@ export function ProjectCard({ project }: Props) {
           </span>
         )}
       </div>
+      {(project.owner_verified || project.contractor_requirement === "verified_only") && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {project.owner_verified && <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold text-success ring-1 ring-success">Verified Homeowner</span>}
+          {project.contractor_requirement === "verified_only" && <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold text-primary ring-1 ring-primary">Verified Pros only</span>}
+        </div>
+      )}
       <h3 className="mt-1.5 text-balance text-base font-semibold leading-snug">{project.title}</h3>
       <div className="mt-3 flex items-center justify-between text-sm">
         <span className="text-muted-foreground">Wanted by {formatDate(project.desired_date)}</span>

@@ -24,6 +24,7 @@ export type ProjectValues = z.infer<typeof schema> & {
   budget_max: number | null;
   owner_questions: string[];
   ai_questions: { question: string; answer: string }[];
+  contractor_requirement: "all" | "verified_only";
 };
 
 const money = (v: string) => {
@@ -53,6 +54,7 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
     max: initial?.budget_max ? String(initial.budget_max) : "",
   });
   const [answers, setAnswers] = useState<Answers>(initial?.answers ?? {});
+  const [requirement, setRequirement] = useState<"all" | "verified_only">(initial?.contractor_requirement ?? "all");
   const [ownerQs, setOwnerQs] = useState<string[]>(initial?.owner_questions ?? []);
   const [aiQs, setAiQs] = useState(initial?.ai_questions ?? []);
   const [file, setFile] = useState<File | null>(null);
@@ -86,7 +88,7 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
       }
       image_url = `storage:${path}`;
     }
-    await onSubmit({ ...parsed.data, image_url, answers, budget_min, budget_max, owner_questions, ai_questions });
+    await onSubmit({ ...parsed.data, image_url, answers, budget_min, budget_max, owner_questions, ai_questions, contractor_requirement: requirement });
     setBusy(false);
   }
 
@@ -164,6 +166,27 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
           </div>
         </fieldset>
       ))}
+
+      <fieldset>
+        <legend className="text-sm font-medium">Who can bid on this job?</legend>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {([["all", "Open to all contractors"], ["verified_only", "Verified Pros only"]] as const).map(([v, label]) => (
+            <button
+              type="button"
+              key={v}
+              onClick={() => setRequirement(v)}
+              aria-pressed={requirement === v}
+              className={cn(
+                "rounded-md px-3 py-1.5 text-xs font-semibold ring-1 transition-colors",
+                requirement === v ? "bg-primary text-primary-foreground ring-primary/40" : "bg-secondary text-secondary-foreground ring-border hover:bg-card",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">Verified Pros have had their past work, reviews and insurance checked by our team.</p>
+      </fieldset>
 
       <label className="block">
         <span className="text-xs font-medium text-muted-foreground">Details</span>
