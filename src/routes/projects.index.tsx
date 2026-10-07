@@ -71,8 +71,7 @@ function Browse() {
   const navigate = useNavigate({ from: "/projects/" });
   const category = ["All", ...CATEGORIES].includes(search.category) ? search.category : "All";
   const stage = ["All", ...STAGES].includes(search.stage) ? search.stage : "All";
-  const areas = search.area.split(",").map((value) => value.trim()).filter((value) => AREAS.includes(value));
-  console.log("[browse render] search.area =", JSON.stringify(search.area));
+  const areas = search.area.split("|").map((value) => value.trim()).filter((value) => AREAS.includes(value));
   const due = DUE_OPTIONS.includes(search.due) ? search.due : "Any date";
   const poster = POSTER_OPTIONS.includes(search.poster) ? search.poster : "Anyone";
   const access = ACCESS_OPTIONS.includes(search.access) ? search.access : "All jobs";
@@ -186,7 +185,6 @@ function Browse() {
 
 function AreaSelect({ value, onToggle }: { value: string[]; onToggle: (areas: string[]) => void }) {
   const [open, setOpen] = useState(false);
-  console.log("[area-select render] value =", JSON.stringify(value));
   const toggle = (area: string) =>
     onToggle(value.includes(area) ? value.filter((item) => item !== area) : [...value, area]);
   return (
