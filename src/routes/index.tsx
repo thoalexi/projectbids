@@ -31,7 +31,7 @@ function Index() {
               Open jobs near you
             </p>
             <h1 className="font-display text-balance text-5xl leading-[1.04]">
-              Post the job. Get honest bids in hours, not weeks.
+              Post it once. Local Atlanta pros compete for your business.
             </h1>
             <p className="mt-5 max-w-[52ch] text-pretty leading-relaxed text-muted-foreground">
               Describe what needs doing around the house, drop a photo and a date, and let local pros compete on
