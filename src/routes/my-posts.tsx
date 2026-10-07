@@ -38,7 +38,7 @@ function MyPosts() {
   });
 
   if (loading) return null;
-  if (!user) return <SignInPrompt title="My Posts" />;
+  if (!user) return <SignInPrompt title="My Posts" redirect="/my-posts" />;
 
   return (
     <main className="mx-auto max-w-4xl px-6 pb-20 pt-12">
@@ -79,13 +79,13 @@ function MyPosts() {
   );
 }
 
-export function SignInPrompt({ title }: { title: string }) {
+export function SignInPrompt({ title, redirect }: { title: string; redirect: string }) {
   return (
     <main className="mx-auto max-w-xl px-6 py-20">
       <div className="frosted rounded-2xl p-8 text-center">
         <h1 className="font-display text-3xl">{title}</h1>
         <p className="mt-2 text-muted-foreground">Sign in to see this page.</p>
-        <Button asChild className="mt-6"><Link to="/auth">Sign in</Link></Button>
+        <Button asChild className="mt-6"><Link to="/auth" search={{ redirect }}>Sign in</Link></Button>
       </div>
     </main>
   );

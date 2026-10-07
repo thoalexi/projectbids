@@ -31,7 +31,7 @@ function PostProject() {
           <h1 className="font-display text-3xl">Post a project</h1>
           <p className="mt-2 text-muted-foreground">Sign in first so contractors know who they're bidding for.</p>
           <Button asChild className="mt-6">
-            <Link to="/auth">Sign in or create an account</Link>
+            <Link to="/auth" search={{ redirect: "/post" }}>Sign in or create an account</Link>
           </Button>
         </div>
       </main>
