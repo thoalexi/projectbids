@@ -15,6 +15,13 @@
       "when": 1791392119001,
       "tag": "0001_project_photos_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791393570004,
+      "tag": "0002_project_answers_and_edit_lock",
+      "breakpoints": true
     }
   ]
 }
