@@ -31,6 +31,7 @@ export type Database = {
           message: string
           portfolio_images: Json
           project_id: string
+          question_answers: Json
           thumbtack_url: string | null
           trade: string | null
           warranty: string | null
@@ -53,6 +54,7 @@ export type Database = {
           message?: string
           portfolio_images?: Json
           project_id: string
+          question_answers?: Json
           thumbtack_url?: string | null
           trade?: string | null
           warranty?: string | null
@@ -75,6 +77,7 @@ export type Database = {
           message?: string
           portfolio_images?: Json
           project_id?: string
+          question_answers?: Json
           thumbtack_url?: string | null
           trade?: string | null
           warranty?: string | null
@@ -130,6 +133,7 @@ export type Database = {
           location: string
           owner_id: string
           owner_name: string
+          owner_questions: Json
           status: string
           title: string
         }
@@ -150,6 +154,7 @@ export type Database = {
           location: string
           owner_id: string
           owner_name?: string
+          owner_questions?: Json
           status?: string
           title: string
         }
@@ -170,6 +175,7 @@ export type Database = {
           location?: string
           owner_id?: string
           owner_name?: string
+          owner_questions?: Json
           status?: string
           title?: string
         }

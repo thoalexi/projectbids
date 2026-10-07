@@ -5,7 +5,8 @@ import { Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AREAS, CATEGORIES } from "@/lib/projects";
-import { QUESTIONS, type Answers } from "@/lib/questions";
+import { MAX_OWNER_QUESTIONS, QUESTIONS, type Answers } from "@/lib/questions";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const schema = z.object({
@@ -21,6 +22,7 @@ export type ProjectValues = z.infer<typeof schema> & {
   answers: Answers;
   budget_min: number | null;
   budget_max: number | null;
+  owner_questions: string[];
 };
 
 const money = (v: string) => {
@@ -50,6 +52,7 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
     max: initial?.budget_max ? String(initial.budget_max) : "",
   });
   const [answers, setAnswers] = useState<Answers>(initial?.answers ?? {});
+  const [ownerQs, setOwnerQs] = useState<string[]>(initial?.owner_questions ?? []);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(initialPreview ?? null);
   const [busy, setBusy] = useState(false);
@@ -66,6 +69,8 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
     const budget_max = money(budget.max);
     if (budget_min && budget_max && budget_min > budget_max) return void toast.error("Budget minimum is higher than the maximum");
     if (file && file.size > 10 * 1024 * 1024) return void toast.error("Photo must be under 10 MB");
+    const owner_questions = ownerQs.map((q) => q.trim()).filter(Boolean);
+    if (owner_questions.some((q) => q.length > 200)) return void toast.error("Keep each question under 200 characters");
     setBusy(true);
     let image_url = initial?.image_url ?? null;
     if (file) {
@@ -78,7 +83,7 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
       }
       image_url = `storage:${path}`;
     }
-    await onSubmit({ ...parsed.data, image_url, answers, budget_min, budget_max });
+    await onSubmit({ ...parsed.data, image_url, answers, budget_min, budget_max, owner_questions });
     setBusy(false);
   }
 
@@ -168,6 +173,29 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
           className="field mt-1.5 resize-none"
         />
       </label>
+      <div>
+        <span className="text-sm font-medium">Questions for contractors (optional)</span>
+        <p className="mt-0.5 text-xs text-muted-foreground">Every contractor must answer these when they bid.</p>
+        <div className="mt-2 space-y-2">
+          {ownerQs.map((q, i) => (
+            <div key={i} className="flex items-center gap-2">
+              <input
+                value={q}
+                maxLength={200}
+                onChange={(e) => setOwnerQs(ownerQs.map((x, j) => (j === i ? e.target.value : x)))}
+                placeholder="Will you provide the shims for the door replacement?"
+                className="field"
+              />
+              <Button type="button" variant="ghost" size="icon" aria-label="Remove question" onClick={() => setOwnerQs(ownerQs.filter((_, j) => j !== i))}>
+                <X className="size-4" />
+              </Button>
+            </div>
+          ))}
+          {ownerQs.length < MAX_OWNER_QUESTIONS && (
+            <Button type="button" variant="secondary" size="sm" onClick={() => setOwnerQs([...ownerQs, ""])}>+ Add a question</Button>
+          )}
+        </div>
+      </div>
       <Button type="submit" disabled={busy} size="lg" className="w-full">
         {busy ? busyLabel : submitLabel}
       </Button>
