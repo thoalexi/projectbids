@@ -172,6 +172,7 @@ export type Database = {
           google_url: string | null
           id: string
           insurance_details: string | null
+          insurance_images: Json
           insured: boolean
           portfolio_images: Json
           reviewed_at: string | null
@@ -193,6 +194,7 @@ export type Database = {
           google_url?: string | null
           id?: string
           insurance_details?: string | null
+          insurance_images?: Json
           insured?: boolean
           portfolio_images?: Json
           reviewed_at?: string | null
@@ -214,6 +216,7 @@ export type Database = {
           google_url?: string | null
           id?: string
           insurance_details?: string | null
+          insurance_images?: Json
           insured?: boolean
           portfolio_images?: Json
           reviewed_at?: string | null

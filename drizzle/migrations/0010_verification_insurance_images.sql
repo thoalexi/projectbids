@@ -1,0 +1,1 @@
+ALTER TABLE public.contractor_verifications ADD COLUMN insurance_images jsonb NOT NULL DEFAULT '[]'::jsonb;
