@@ -14,18 +14,22 @@ type Props = {
     bid_count: number | null;
     budget_min: number | null;
     budget_max: number | null;
-    contractor_requirement?: string;
+  contractor_requirement?: string;
     owner_verified?: boolean;
   };
+  locked?: boolean;
 };
 
-export function ProjectCard({ project }: Props) {
+export function ProjectCard({ project, locked }: Props) {
   const count = project.bid_count ?? 0;
   const budget = formatBudget(project.budget_min, project.budget_max);
+  const Wrapper = locked ? "div" : Link;
+  const wrapperProps = locked
+    ? {}
+    : { to: "/projects/$id", params: { id: project.id } };
   return (
-    <Link
-      to="/projects/$id"
-      params={{ id: project.id }}
+    <Wrapper
+      {...wrapperProps}
       className="frosted block rounded-2xl p-4 transition-transform hover:-translate-y-0.5"
     >
       <ProjectImage url={project.image_url} alt={project.title} className="aspect-[16/10] w-full" />
