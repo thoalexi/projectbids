@@ -13,6 +13,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       setUser(session?.user ?? null);
+      if (session?.user && typeof window !== "undefined") {
+        const next = sessionStorage.getItem("beam:post-auth-redirect");
+        if (next && next.startsWith("/") && !next.startsWith("//")) {
+          sessionStorage.removeItem("beam:post-auth-redirect");
+          if (window.location.pathname !== next) window.location.assign(next);
+        }
+      }
     });
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user ?? null);
