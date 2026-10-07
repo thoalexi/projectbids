@@ -55,7 +55,7 @@ function EditProject() {
       <ProjectForm
         userId={user!.id}
         initial={{ ...project, answers: toAnswers(project.answers) }}
-        initialPreview={preview}
+        initialPreview={preview ?? null}
         submitLabel="Save changes"
         busyLabel="Saving…"
         onSubmit={async (v) => {
