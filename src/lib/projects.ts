@@ -1,5 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Tables } from "@/integrations/supabase/types";
+
+type WithCount = { bid_count: number };
 
 export const CATEGORIES = [
   "Interior/exterior painting",
@@ -31,11 +34,11 @@ export const projectsQuery = () =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("*, bid_count")
+        .select("*, bid_count" as "*")
         .neq("status", "draft")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return data as (Tables<"projects"> & WithCount)[];
     },
   });
 
@@ -45,11 +48,11 @@ export const projectQuery = (id: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("*, bid_count, bids(*)")
+        .select("*, bid_count, bids(*)" as "*, bids(*)")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
-      return data;
+      return data as (NonNullable<typeof data> & WithCount) | null;
     },
   });
 
