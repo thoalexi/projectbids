@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { CATEGORIES } from "@/lib/projects";
+import { AREAS, CATEGORIES } from "@/lib/projects";
 import { QUESTIONS, type Answers } from "@/lib/questions";
 import { cn } from "@/lib/utils";
 
@@ -16,7 +16,17 @@ const schema = z.object({
   desired_date: z.string().min(1, "Pick a date"),
 });
 
-export type ProjectValues = z.infer<typeof schema> & { image_url: string | null; answers: Answers };
+export type ProjectValues = z.infer<typeof schema> & {
+  image_url: string | null;
+  answers: Answers;
+  budget_min: number | null;
+  budget_max: number | null;
+};
+
+const money = (v: string) => {
+  const n = Number(v.replace(/[$,\s]/g, ""));
+  return v.trim() && Number.isFinite(n) && n > 0 ? Math.round(n) : null;
+};
 
 type Props = {
   userId: string;
@@ -30,10 +40,14 @@ type Props = {
 export function ProjectForm({ userId, initial, initialPreview, submitLabel, busyLabel, onSubmit }: Props) {
   const [form, setForm] = useState({
     title: initial?.title ?? "",
-    category: initial?.category ?? "Painting",
+    category: initial?.category && CATEGORIES.includes(initial.category) ? initial.category : CATEGORIES[0]!,
     description: initial?.description ?? "",
-    location: initial?.location ?? "",
+    location: initial?.location ?? AREAS[0]!,
     desired_date: initial?.desired_date ?? "",
+  });
+  const [budget, setBudget] = useState({
+    min: initial?.budget_min ? String(initial.budget_min) : "",
+    max: initial?.budget_max ? String(initial.budget_max) : "",
   });
   const [answers, setAnswers] = useState<Answers>(initial?.answers ?? {});
   const [file, setFile] = useState<File | null>(null);
@@ -48,6 +62,9 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
     if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message);
     const missing = QUESTIONS.find((q) => !answers[q.id]);
     if (missing) return void toast.error(`Please answer: ${missing.label}`);
+    const budget_min = money(budget.min);
+    const budget_max = money(budget.max);
+    if (budget_min && budget_max && budget_min > budget_max) return void toast.error("Budget minimum is higher than the maximum");
     if (file && file.size > 10 * 1024 * 1024) return void toast.error("Photo must be under 10 MB");
     setBusy(true);
     let image_url = initial?.image_url ?? null;
@@ -61,7 +78,7 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
       }
       image_url = `storage:${path}`;
     }
-    await onSubmit({ ...parsed.data, image_url, answers });
+    await onSubmit({ ...parsed.data, image_url, answers, budget_min, budget_max });
     setBusy(false);
   }
 
@@ -97,13 +114,25 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
           </select>
         </label>
         <label className="block">
-          <span className="text-xs font-medium text-muted-foreground">City</span>
-          <input value={form.location} onChange={set("location")} maxLength={100} placeholder="Portland, OR" className="field mt-1.5" />
+          <span className="text-xs font-medium text-muted-foreground">Area (Atlanta metro)</span>
+          <select value={form.location} onChange={set("location")} className="field mt-1.5">
+            {(AREAS.includes(form.location) ? AREAS : [form.location, ...AREAS]).map((a) => <option key={a}>{a}</option>)}
+          </select>
         </label>
         <label className="block">
           <span className="text-xs font-medium text-muted-foreground">Done by</span>
           <input type="date" value={form.desired_date} onChange={set("desired_date")} className="field mt-1.5" />
         </label>
+      </div>
+
+      <div>
+        <span className="text-xs font-medium text-muted-foreground">Budget range (optional)</span>
+        <div className="mt-1.5 flex items-center gap-2">
+          <input inputMode="numeric" value={budget.min} onChange={(e) => setBudget({ ...budget, min: e.target.value })} placeholder="$ min" className="field" />
+          <span className="text-muted-foreground">–</span>
+          <input inputMode="numeric" value={budget.max} onChange={(e) => setBudget({ ...budget, max: e.target.value })} placeholder="$ max" className="field" />
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">Leave blank if you'd rather not say.</p>
       </div>
 
       {QUESTIONS.map((q) => (
