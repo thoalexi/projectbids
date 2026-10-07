@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ProjectImage } from "@/components/ProjectImage";
-import { formatBudget, formatDate, formatMoney, MAX_BIDS, projectQuery } from "@/lib/projects";
+import { firstName, formatBudget, formatDate, formatMoney, MAX_BIDS, projectQuery } from "@/lib/projects";
 import { BidComparison, FollowUpStep, toAiQuestions } from "@/components/ProjectAi";
 import type { Comparison } from "@/lib/ai.functions";
 import { QUESTIONS, toAnswers, toOwnerQuestions } from "@/lib/questions";
