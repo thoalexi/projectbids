@@ -14,7 +14,113 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bids: {
+        Row: {
+          amount: number
+          contractor_id: string
+          contractor_name: string
+          created_at: string
+          id: string
+          message: string
+          project_id: string
+          trade: string | null
+        }
+        Insert: {
+          amount: number
+          contractor_id: string
+          contractor_name: string
+          created_at?: string
+          id?: string
+          message?: string
+          project_id: string
+          trade?: string | null
+        }
+        Update: {
+          amount?: number
+          contractor_id?: string
+          contractor_name?: string
+          created_at?: string
+          id?: string
+          message?: string
+          project_id?: string
+          trade?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          trade: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string
+          id: string
+          trade?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          trade?: string | null
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          accepted_bid_id: string | null
+          category: string
+          created_at: string
+          description: string
+          desired_date: string
+          id: string
+          image_url: string | null
+          location: string
+          owner_id: string
+          owner_name: string
+          status: string
+          title: string
+        }
+        Insert: {
+          accepted_bid_id?: string | null
+          category: string
+          created_at?: string
+          description: string
+          desired_date: string
+          id?: string
+          image_url?: string | null
+          location: string
+          owner_id: string
+          owner_name?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          accepted_bid_id?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          desired_date?: string
+          id?: string
+          image_url?: string | null
+          location?: string
+          owner_id?: string
+          owner_name?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
