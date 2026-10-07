@@ -6,4 +6,4 @@
 - [x] Add the existing Beam Bids success-fee product to built-in payments.
 - [x] Confirm purchase behavior and that subscriptions are not part of the product.
 - [x] Verify the jobs page and payment flow still work in the preview.- [x] Verified Pro contractors ($5 application, admin review before badge) and Verified Homeowners (2+ hires), with verified-only jobs and filters.
-- [ ] Give Alexis's account (thoalexi@gmail.com) reviewer access — blocked: needs a database write I can't run from here.
+- [x] Owner can turn on admin access from the review page (owner email only).
