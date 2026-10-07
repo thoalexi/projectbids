@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as MyBidsRouteImport } from './routes/my-bids'
+import { Route as MyPostsRouteImport } from './routes/my-posts'
 import { Route as PostRouteImport } from './routes/post'
 import { Route as EditIdRouteImport } from './routes/edit.$id'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -30,6 +32,16 @@ const AuthRoute = AuthRouteImport.update({
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyBidsRoute = MyBidsRouteImport.update({
+  id: '/my-bids',
+  path: '/my-bids',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MyPostsRoute = MyPostsRouteImport.update({
+  id: '/my-posts',
+  path: '/my-posts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostRoute = PostRouteImport.update({
@@ -57,6 +69,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/my-bids': typeof MyBidsRoute
+  '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -66,6 +80,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/my-bids': typeof MyBidsRoute
+  '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -76,6 +92,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/my-bids': typeof MyBidsRoute
+  '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -87,6 +105,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/how-it-works'
+    | '/my-bids'
+    | '/my-posts'
     | '/post'
     | '/edit/$id'
     | '/projects/$id'
@@ -96,6 +116,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/how-it-works'
+    | '/my-bids'
+    | '/my-posts'
     | '/post'
     | '/edit/$id'
     | '/projects/$id'
@@ -105,6 +127,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/how-it-works'
+    | '/my-bids'
+    | '/my-posts'
     | '/post'
     | '/edit/$id'
     | '/projects/$id'
@@ -115,6 +139,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  MyBidsRoute: typeof MyBidsRoute
+  MyPostsRoute: typeof MyPostsRoute
   PostRoute: typeof PostRoute
   EditIdRoute: typeof EditIdRoute
   ProjectsIdRoute: typeof ProjectsIdRoute
@@ -142,6 +168,20 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-bids': {
+      id: '/my-bids'
+      path: '/my-bids'
+      fullPath: '/my-bids'
+      preLoaderRoute: typeof MyBidsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/my-posts': {
+      id: '/my-posts'
+      path: '/my-posts'
+      fullPath: '/my-posts'
+      preLoaderRoute: typeof MyPostsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/post': {
@@ -179,6 +219,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   HowItWorksRoute: HowItWorksRoute,
+  MyBidsRoute: MyBidsRoute,
+  MyPostsRoute: MyPostsRoute,
   PostRoute: PostRoute,
   EditIdRoute: EditIdRoute,
   ProjectsIdRoute: ProjectsIdRoute,
