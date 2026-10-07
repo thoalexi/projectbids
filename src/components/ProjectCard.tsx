@@ -57,6 +57,6 @@ export function ProjectCard({ project, locked }: Props) {
           {count} {count === 1 ? "bid" : "bids"}
         </span>
       </div>
-    </Link>
+    </Wrapper>
   );
 }

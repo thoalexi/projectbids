@@ -158,15 +158,19 @@ function Browse() {
           user ? (
             <ProjectCard key={p.id} project={p} />
           ) : (
-            <button
+            <div
               key={p.id}
-              type="button"
+              role="link"
+              tabIndex={0}
               onClick={() => navigate({ to: "/auth", search: { redirect: `/projects/${p.id}` } })}
-              className="text-left"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") navigate({ to: "/auth", search: { redirect: `/projects/${p.id}` } });
+              }}
+              className="cursor-pointer text-left"
               aria-label={`Sign in to view ${p.title}`}
             >
-              <ProjectCard project={p} />
-            </button>
+              <ProjectCard project={p} locked />
+            </div>
           )
         )}
       </div>
