@@ -144,7 +144,7 @@ function Browse() {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => navigate({ search: { category: "All", stage: "All", area: "All", due: "Any date", poster: "Anyone", access: "All jobs" } })}
+              onClick={() => navigate({ search: { category: "All", stage: "All", area: "", due: "Any date", poster: "Anyone", access: "All jobs" } })}
             >
               <RotateCcw className="size-3.5" /> Clear filters
             </Button>
@@ -176,7 +176,7 @@ function Browse() {
         <div className="mt-10 text-center">
           <p className="font-semibold">No jobs match these filters.</p>
           <p className="mt-1 text-sm text-muted-foreground">Try a different location, hiring stage, or completion date.</p>
-          {active && <Button type="button" variant="secondary" className="mt-4" onClick={() => navigate({ search: { category: "All", stage: "All", area: "All", due: "Any date", poster: "Anyone", access: "All jobs" } })}>Clear filters</Button>}
+          {active && <Button type="button" variant="secondary" className="mt-4" onClick={() => navigate({ search: { category: "All", stage: "All", area: "", due: "Any date", poster: "Anyone", access: "All jobs" } })}>Clear filters</Button>}
         </div>
       )}
     </main>
