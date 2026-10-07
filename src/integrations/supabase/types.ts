@@ -23,13 +23,19 @@ export type Database = {
           disposal: number | null
           duration_days: number | null
           earliest_start: string | null
+          google_url: string | null
           id: string
+          insured: boolean
           labor: number | null
           materials: number | null
           message: string
+          portfolio_images: Json
           project_id: string
+          thumbtack_url: string | null
           trade: string | null
           warranty: string | null
+          website: string | null
+          yelp_url: string | null
         }
         Insert: {
           amount: number
@@ -39,13 +45,19 @@ export type Database = {
           disposal?: number | null
           duration_days?: number | null
           earliest_start?: string | null
+          google_url?: string | null
           id?: string
+          insured?: boolean
           labor?: number | null
           materials?: number | null
           message?: string
+          portfolio_images?: Json
           project_id: string
+          thumbtack_url?: string | null
           trade?: string | null
           warranty?: string | null
+          website?: string | null
+          yelp_url?: string | null
         }
         Update: {
           amount?: number
@@ -55,13 +67,19 @@ export type Database = {
           disposal?: number | null
           duration_days?: number | null
           earliest_start?: string | null
+          google_url?: string | null
           id?: string
+          insured?: boolean
           labor?: number | null
           materials?: number | null
           message?: string
+          portfolio_images?: Json
           project_id?: string
+          thumbtack_url?: string | null
           trade?: string | null
           warranty?: string | null
+          website?: string | null
+          yelp_url?: string | null
         }
         Relationships: [
           {
