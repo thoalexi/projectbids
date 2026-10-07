@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { ProjectImage } from "@/components/ProjectImage";
 import { formatDate, formatMoney, projectQuery } from "@/lib/projects";
+import { QUESTIONS, toAnswers } from "@/lib/questions";
 
 export const Route = createFileRoute("/projects/$id")({
   head: () => ({
@@ -113,6 +114,16 @@ function ProjectDetail() {
               <p className="mt-3 max-w-[60ch] text-pretty text-sm leading-relaxed text-secondary-foreground">
                 {project.description}
               </p>
+              {Object.keys(toAnswers(project.answers)).length > 0 && (
+                <dl className="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+                  {QUESTIONS.filter((q) => toAnswers(project.answers)[q.id]).map((q) => (
+                    <div key={q.id}>
+                      <dt className="text-xs text-muted-foreground">{q.label}</dt>
+                      <dd className="font-medium">{toAnswers(project.answers)[q.id]}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
             </div>
             <span className="shrink-0 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-border">
               {bids.length} {bids.length === 1 ? "bid" : "bids"}
@@ -170,6 +181,13 @@ function ProjectDetail() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Compare the bids and press "Accept bid" on the one you want. Bids are sorted lowest price first.
               </p>
+              {bids.length === 0 ? (
+                <Button asChild variant="secondary" className="mt-5 w-full">
+                  <Link to="/edit/$id" params={{ id }}>Edit project</Link>
+                </Button>
+              ) : (
+                <p className="mt-3 text-xs text-muted-foreground">Editing is locked once bids arrive.</p>
+              )}
             </>
           ) : !user ? (
             <>
