@@ -17,3 +17,4 @@
 - Project photos live in the private `project-photos` bucket; `projects.image_url` stores `storage:<path>` for uploads (resolved via signed URLs) or a plain URL for seeded images — public buckets are blocked by workspace policy.
 - Bids snapshot `contractor_name`/`trade` so seeded demo bids work without auth users.
 - Visual tokens live in src/styles.css (`frosted`, `field`, `font-display` utilities); components use semantic tokens only.
+- Contractor success fees use authenticated server functions and a signature-verified payment webhook; project awards require a paid bid record so clients cannot bypass payment.

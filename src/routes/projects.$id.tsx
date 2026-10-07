@@ -14,6 +14,10 @@ import { formatBudget, formatDate, formatMoney, MAX_BIDS, projectQuery } from "@
 import { BidComparison, FollowUpStep, toAiQuestions } from "@/components/ProjectAi";
 import type { Comparison } from "@/lib/ai.functions";
 import { QUESTIONS, toAnswers, toOwnerQuestions } from "@/lib/questions";
+import { PaymentMethodSetup } from "@/components/PaymentMethodSetup";
+import { acceptBidAndChargeFee, createBidCardSetup, getProjectPaymentReadiness, submitBidWithPaymentMethod } from "@/lib/payments.functions";
+import { formatFee, successFeeCents } from "@/lib/fees";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 export const Route = createFileRoute("/projects/$id")({
   head: () => ({
@@ -80,6 +84,8 @@ function ProjectDetail() {
   const [trade, setTrade] = useState("");
   const [busy, setBusy] = useState(false);
   const [qAnswers, setQAnswers] = useState<string[]>([]);
+  const [setupSecret, setSetupSecret] = useState<string | null>(null);
+  const [pendingBid, setPendingBid] = useState<Parameters<typeof submitBidWithPaymentMethod>[0]["data"] | null>(null);
 
   // Prefill credentials from the contractor's most recent bid.
   useEffect(() => {
@@ -106,6 +112,8 @@ function ProjectDetail() {
   const parts = [extra.materials, extra.labor, extra.disposal].filter((v) => v.trim() !== "");
   const hasBreakdown = parts.length > 0;
   const breakdownSum = Math.round(parts.reduce((s, v) => s + (Number(v) || 0), 0) * 100) / 100;
+  const currentAmount = hasBreakdown ? breakdownSum : Number(amount || 0);
+  const currentFee = successFeeCents(currentAmount);
 
   if (isLoading) return <main className="mx-auto max-w-6xl px-6 py-16 text-muted-foreground">Loading…</main>;
   if (!project)
@@ -132,9 +140,11 @@ function ProjectDetail() {
   };
 
   async function accept(bidId: string) {
-    const { error } = await supabase.from("projects").update({ status: "awarded", accepted_bid_id: bidId }).eq("id", id);
-    if (error) return void toast.error("Couldn't accept that bid. Try again.");
-    toast.success("Bid accepted! The contractor has the job.");
+    setBusy(true);
+    const result = await acceptBidAndChargeFee({ data: { projectId: id, bidId, environment: getStripeEnvironment() } });
+    setBusy(false);
+    if ("error" in result) return void toast.error(result.error);
+    toast.success(result.paid ? "Payment confirmed — the contractor is hired." : "Payment is processing. The project will update when it clears.");
     refresh();
   }
 
@@ -165,31 +175,43 @@ function ProjectDetail() {
     const unanswered = ownerQs.findIndex((_, i) => !(qAnswers[i] ?? "").trim());
     if (unanswered >= 0) return void toast.error(`Please answer: ${ownerQs[unanswered]}`);
     const question_answers = ownerQs.map((q, i) => ({ question: q, answer: (qAnswers[i] ?? "").trim().slice(0, 500) }));
-    setBusy(true);
-    const { error } = await supabase.from("bids").insert({
-      project_id: id,
-      contractor_id: user.id,
-      contractor_name: displayName || "Contractor",
-      trade: trade.trim().slice(0, 60) || project!.category,
+    const bidData = {
+      projectId: id,
+      setupIntentId: "",
       amount: parsed.data.amount,
+      contractorName: displayName || "Contractor",
+      trade: trade.trim().slice(0, 60) || project.category,
       message: parsed.data.message,
       materials: parsed.data.materials,
       labor: parsed.data.labor,
       disposal: parsed.data.disposal,
-      duration_days: parsed.data.duration_days,
-      earliest_start: parsed.data.earliest_start,
+      durationDays: parsed.data.duration_days,
+      earliestStart: parsed.data.earliest_start,
       warranty: parsed.data.warranty || null,
       insured: parsed.data.insured,
       website: parsed.data.website,
-      google_url: parsed.data.google_url,
-      yelp_url: parsed.data.yelp_url,
-      thumbtack_url: parsed.data.thumbtack_url,
-      portfolio_images: photos,
-      question_answers,
-    });
+      googleUrl: parsed.data.google_url,
+      yelpUrl: parsed.data.yelp_url,
+      thumbtackUrl: parsed.data.thumbtack_url,
+      portfolioImages: photos,
+      questionAnswers: question_answers,
+      environment: getStripeEnvironment(),
+    } as const;
+    setBusy(true);
+    const setup = await createBidCardSetup({ data: { projectId: id, environment: bidData.environment } });
     setBusy(false);
-    if (error) return void toast.error(error.message.includes("full") ? "Sorry — this project already has 5 bids." : "Couldn't send your bid. Try again.");
+    if ("error" in setup) return void toast.error(setup.error);
+    setPendingBid(bidData);
+    setSetupSecret(setup.clientSecret);
+  }
+
+  async function finishBid(setupIntentId: string) {
+    if (!pendingBid) throw new Error("Your bid details are missing");
+    const result = await submitBidWithPaymentMethod({ data: { ...pendingBid, setupIntentId } });
+    if ("error" in result) throw new Error(result.error);
     toast.success("Your bid was sent to the homeowner.");
+    setSetupSecret(null);
+    setPendingBid(null);
     setAmount("");
     setMessage("");
     setExtra({ materials: "", labor: "", disposal: "", duration_days: "", earliest_start: "", warranty: "" });
@@ -348,7 +370,7 @@ function ProjectDetail() {
                         <CheckCircle2 className="size-4" /> Hired
                       </span>
                     ) : isOwner && isOpen ? (
-                      <Button size="sm" onClick={() => accept(b.id)}>Accept bid</Button>
+                      <Button size="sm" disabled={busy || project.payment_status === "pending"} onClick={() => accept(b.id)}>{project.payment_status === "pending" && project.pending_bid_id === b.id ? "Charging…" : "Hire & charge fee"}</Button>
                     ) : b.contractor_id === user?.id && isOpen ? (
                       <Button size="sm" variant="ghost" onClick={() => withdraw(b.id)}>Withdraw</Button>
                     ) : null}
@@ -410,7 +432,7 @@ function ProjectDetail() {
               <p className="mt-1 text-sm text-muted-foreground">Add your price and a short note to the homeowner.</p>
               <div className="mt-4 flex gap-2 rounded-lg bg-success/10 p-3 text-sm ring-1 ring-success/25">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
-                <p><span className="font-semibold">This bid is free.</span> You only pay Beam Bids if the homeowner hires you.</p>
+                <p><span className="font-semibold">No charge to bid.</span> If the homeowner hires you, your saved card is charged a {formatFee(currentFee)} success fee. Losing bids cost $0.</p>
               </div>
               <div className="mt-5 space-y-4">
                 <div className="grid grid-cols-3 gap-2">
@@ -521,7 +543,7 @@ function ProjectDetail() {
                   />
                 </label>
                 <Button type="submit" disabled={busy} className="w-full">
-                  {busy ? "Sending…" : "Submit bid"}
+                  {busy ? "Preparing secure card form…" : `Continue · ${formatFee(currentFee)} only if hired`}
                 </Button>
               </div>
             </form>
@@ -532,6 +554,13 @@ function ProjectDetail() {
         <DialogContent className="max-w-2xl">
           <DialogTitle className="sr-only">Past work photo</DialogTitle>
           {lightbox && <ProjectImage url={lightbox} alt="Past work" className="aspect-[4/3] w-full" />}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!setupSecret} onOpenChange={(open) => { if (!open && !busy) { setSetupSecret(null); setPendingBid(null); } }}>
+        <DialogContent className="max-w-xl">
+          <DialogTitle>Save a payment method</DialogTitle>
+          <p className="text-sm text-muted-foreground">Nothing is charged now. If this bid is hired, the success fee will be {formatFee(currentFee)}.</p>
+          {setupSecret && <PaymentMethodSetup clientSecret={setupSecret} onReady={finishBid} />}
         </DialogContent>
       </Dialog>
     </main>

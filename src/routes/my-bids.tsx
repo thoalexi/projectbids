@@ -5,6 +5,8 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/projects";
 import { SignInPrompt } from "./my-posts";
+import { getMyBidPayments } from "@/lib/payments.functions";
+import { formatFee } from "@/lib/fees";
 
 export const Route = createFileRoute("/my-bids")({
   head: () => ({
@@ -35,6 +37,11 @@ function MyBids() {
       return data;
     },
   });
+  const { data: payments } = useQuery({
+    queryKey: ["my-bid-payments", user?.id],
+    enabled: !!user,
+    queryFn: () => getMyBidPayments(),
+  });
 
   if (loading) return null;
   if (!user) return <SignInPrompt title="My Bids" redirect="/my-bids" />;
@@ -42,7 +49,7 @@ function MyBids() {
   const rows = (data ?? []).map((b) => {
     const p = b.projects;
     const group = p?.accepted_bid_id === b.id ? "Hired" : p?.status === "awarded" ? "Not selected" : "Pending";
-    return { ...b, group };
+    return { ...b, group, payment: payments?.find((payment) => payment.bid_id === b.id) };
   });
 
   return (
@@ -72,6 +79,11 @@ function MyBids() {
                         <p className="text-xs text-muted-foreground">
                           {b.projects?.location} · bid on {new Date(b.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                         </p>
+                        {b.payment && (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            Success fee {formatFee(b.payment.fee_amount_cents)} · {b.payment.status === "ready" ? "card ready" : b.payment.status === "paid" ? "paid" : b.payment.status === "closed" ? "no charge" : b.payment.status === "expired" ? "expired — no charge" : b.payment.status.replace("_", " ")}
+                          </p>
+                        )}
                       </div>
                       <span className={`shrink-0 text-lg font-semibold ${g === "Hired" ? "text-success" : ""}`}>{formatMoney(Number(b.amount))}</span>
                     </Link>
