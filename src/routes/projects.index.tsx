@@ -117,7 +117,7 @@ function Browse() {
               {["All", ...STAGES].map((option) => <option key={option}>{option}</option>)}
             </select>
           </label>
-          <AreaSelect value={areas} onToggle={(next) => navigate({ search: (previous) => ({ ...previous, area: next.join(",") }) })} />
+          <AreaSelect value={areas} onToggle={(next) => navigate({ search: (previous) => ({ ...previous, area: next.join("|") }) })} />
           <label className="block">
             <span className="text-xs font-medium text-muted-foreground">Done by</span>
             <select value={due} onChange={(event) => update("due", event.target.value)} className="field mt-1.5">
