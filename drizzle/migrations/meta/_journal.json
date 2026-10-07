@@ -43,6 +43,13 @@
       "when": 1791397154178,
       "tag": "0005_owner_questions",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791399945216,
+      "tag": "0006_bid_success_fee_payments",
+      "breakpoints": true
     }
   ]
 }
