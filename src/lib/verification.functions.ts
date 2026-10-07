@@ -146,3 +146,17 @@ export const reviewVerificationApplication = createServerFn({ method: "POST" })
     if (error) throw error;
     return { ok: true };
   });
+
+// One-time bootstrap: only the site owner's confirmed email can claim admin.
+const OWNER_EMAIL = "thoalexi@gmail.com";
+export const claimOwnerAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data: auth } = await context.supabase.auth.getUser();
+    const u = auth.user;
+    if (!u || u.id !== context.userId || u.email?.toLowerCase() !== OWNER_EMAIL || !u.email_confirmed_at) throw new Error("Only the site owner can do this");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("user_roles").upsert({ user_id: u.id, role: "admin" }, { onConflict: "user_id,role" });
+    if (error) throw error;
+    return { ok: true };
+  });

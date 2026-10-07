@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { ProjectImage } from "@/components/ProjectImage";
-import { amIAdmin, listVerificationApplications, reviewVerificationApplication } from "@/lib/verification.functions";
+import { amIAdmin, claimOwnerAdmin, listVerificationApplications, reviewVerificationApplication } from "@/lib/verification.functions";
 
 export const Route = createFileRoute("/admin/verifications")({
   head: () => ({
@@ -31,13 +31,33 @@ function AdminPage() {
   const checkAdmin = useServerFn(amIAdmin);
   const list = useServerFn(listVerificationApplications);
   const review = useServerFn(reviewVerificationApplication);
+  const claim = useServerFn(claimOwnerAdmin);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const admin = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
   const apps = useQuery({ queryKey: ["verification-apps"], enabled: admin.data === true, queryFn: () => list() });
 
   if (!user) return <main className="mx-auto max-w-4xl px-6 py-16"><Link to="/auth" search={{ redirect: "/admin/verifications" }} className="text-primary">Sign in</Link></main>;
   if (admin.isLoading) return <main className="mx-auto max-w-4xl px-6 py-16 text-muted-foreground">Loading…</main>;
-  if (!admin.data) return <main className="mx-auto max-w-4xl px-6 py-16"><p>This page is for Beam Bids admins only.</p></main>;
+  if (!admin.data)
+    return (
+      <main className="mx-auto max-w-4xl px-6 py-16">
+        <p>This page is for Beam Bids admins only.</p>
+        <Button
+          className="mt-4"
+          onClick={async () => {
+            try {
+              await claim();
+              toast.success("You're now an admin.");
+              qc.invalidateQueries({ queryKey: ["am-admin"] });
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : "Couldn't grant access");
+            }
+          }}
+        >
+          I'm the site owner — turn on admin access
+        </Button>
+      </main>
+    );
 
   async function decide(id: string, decision: "approved" | "rejected") {
     try {
