@@ -50,6 +50,20 @@
       "when": 1791399945216,
       "tag": "0006_bid_success_fee_payments",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791400351166,
+      "tag": "0007_secure_bid_payment_finalization",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791400429115,
+      "tag": "0008_enforce_paid_project_awards",
+      "breakpoints": true
     }
   ]
 }

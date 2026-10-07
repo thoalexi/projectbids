@@ -277,6 +277,10 @@ export type Database = {
         Returns: number
       }
       expire_past_due_projects: { Args: never; Returns: number }
+      finalize_paid_bid: {
+        Args: { p_payment_intent_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
