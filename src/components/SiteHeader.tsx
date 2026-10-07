@@ -20,6 +20,12 @@ export function SiteHeader() {
             <Link to="/projects" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               Browse jobs
             </Link>
+            {user && (
+              <>
+                <Link to="/my-posts" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Posts</Link>
+                <Link to="/my-bids" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Bids</Link>
+              </>
+            )}
             <Link to="/how-it-works" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               How it works
             </Link>
@@ -46,6 +52,13 @@ export function SiteHeader() {
             </Link>
           </Button>
         </div>
+        {user && (
+          <nav className="flex justify-center gap-6 border-t border-border py-2 text-sm font-medium text-muted-foreground md:hidden">
+            <Link to="/projects" activeProps={{ className: "text-foreground" }}>Browse</Link>
+            <Link to="/my-posts" activeProps={{ className: "text-foreground" }}>My Posts</Link>
+            <Link to="/my-bids" activeProps={{ className: "text-foreground" }}>My Bids</Link>
+          </nav>
+        )}
       </div>
     </header>
   );
