@@ -35,7 +35,7 @@ function EditProject() {
   if (loading || isLoading || (project && preview === undefined))
     return <main className="mx-auto max-w-3xl px-6 py-16 text-muted-foreground">Loading…</main>;
 
-  const locked = !project || project.owner_id !== user?.id || project.status !== "open" || (project.bids?.length ?? 0) > 0;
+  const locked = !project || project.owner_id !== user?.id || project.status === "awarded" || (project.bid_count ?? 0) > 0;
   if (locked)
     return (
       <main className="mx-auto max-w-xl px-6 py-20">
@@ -54,7 +54,7 @@ function EditProject() {
       <p className="mt-2 text-muted-foreground">You can make changes until the first bid arrives.</p>
       <ProjectForm
         userId={user!.id}
-        initial={{ ...project, answers: toAnswers(project.answers) }}
+        initial={{ ...project, answers: toAnswers(project.answers), budget_min: project.budget_min, budget_max: project.budget_max }}
         initialPreview={preview ?? null}
         submitLabel="Save changes"
         busyLabel="Saving…"

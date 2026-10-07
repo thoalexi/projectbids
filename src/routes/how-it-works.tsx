@@ -15,8 +15,8 @@ export const Route = createFileRoute("/how-it-works")({
 
 const steps = [
   { n: "01", t: "Post your project", d: "Add a photo, the details and size of the job, and when you'd like it done." },
-  { n: "02", t: "Contractors bid", d: "Local pros say they're interested and name their price — \"I'll do it for $150.\"" },
-  { n: "03", t: "You choose", d: "Compare every bid side by side and accept the one you trust. That's it." },
+  { n: "02", t: "Contractors bid", d: "Up to five Atlanta pros send itemized, sealed bids — only you see the prices." },
+  { n: "03", t: "You choose", d: "AI lines up every bid side by side and flags what's missing. Accept the one you trust." },
 ];
 
 function HowItWorks() {

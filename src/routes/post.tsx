@@ -43,17 +43,17 @@ function PostProject() {
       <p className="mt-2 text-muted-foreground">Tell local pros what you need. It's free to post.</p>
       <ProjectForm
         userId={user.id}
-        submitLabel="Post project"
+        submitLabel="Continue"
         busyLabel="Posting…"
         onSubmit={async (v) => {
           const { data, error } = await supabase
             .from("projects")
-            .insert({ ...v, owner_id: user.id, owner_name: displayName || "Homeowner" })
+            .insert({ ...v, status: "draft", owner_id: user.id, owner_name: displayName || "Homeowner" })
             .select("id")
             .single();
           if (error || !data) return void toast.error("Couldn't post your project. Try again.");
           qc.invalidateQueries({ queryKey: ["projects"] });
-          toast.success("Your project is live! Bids will show up here.");
+          toast.success("Almost done — answer a few quick questions to go live.");
           navigate({ to: "/projects/$id", params: { id: data.id } });
         }}
       />

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ProjectImage } from "./ProjectImage";
-import { formatDate } from "@/lib/projects";
+import { formatBudget, formatDate } from "@/lib/projects";
 
 type Props = {
   project: {
@@ -11,12 +11,15 @@ type Props = {
     desired_date: string;
     image_url: string | null;
     status: string;
-    bids: { count: number }[];
+    bid_count: number | null;
+    budget_min: number | null;
+    budget_max: number | null;
   };
 };
 
 export function ProjectCard({ project }: Props) {
-  const count = project.bids?.[0]?.count ?? 0;
+  const count = project.bid_count ?? 0;
+  const budget = formatBudget(project.budget_min, project.budget_max);
   return (
     <Link
       to="/projects/$id"
@@ -28,7 +31,7 @@ export function ProjectCard({ project }: Props) {
         <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[11px] font-medium uppercase tracking-[0.1em] text-accent">
           {project.category}
         </span>
-        <span className="text-xs text-muted-foreground">{project.location}</span>
+        <span className="text-xs text-muted-foreground">{project.location}{budget && ` · ${budget}`}</span>
         {project.status === "awarded" && (
           <span className="ml-auto rounded bg-success/10 px-1.5 py-0.5 text-[11px] font-medium uppercase tracking-[0.1em] text-success">
             Hired

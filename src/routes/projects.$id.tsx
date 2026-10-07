@@ -8,7 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { ProjectImage } from "@/components/ProjectImage";
-import { formatDate, formatMoney, projectQuery } from "@/lib/projects";
+import { formatBudget, formatDate, formatMoney, MAX_BIDS, projectQuery } from "@/lib/projects";
+import { BidComparison, FollowUpStep, toAiQuestions } from "@/components/ProjectAi";
+import type { Comparison } from "@/lib/ai.functions";
 import { QUESTIONS, toAnswers } from "@/lib/questions";
 
 export const Route = createFileRoute("/projects/$id")({
@@ -23,8 +25,15 @@ export const Route = createFileRoute("/projects/$id")({
   component: ProjectDetail,
 });
 
+const optMoney = z.preprocess((v) => (v === "" ? null : v), z.coerce.number().min(0).max(1_000_000).nullable());
 const bidSchema = z.object({
-  amount: z.coerce.number().positive("Enter a price above $0").max(1_000_000, "That's too high"),
+  amount: z.coerce.number().positive("Enter a total above $0").max(1_000_000, "That's too high"),
+  materials: optMoney,
+  labor: optMoney,
+  disposal: optMoney,
+  duration_days: z.preprocess((v) => (v === "" ? null : v), z.coerce.number().int("Days must be a whole number").min(1).max(365).nullable()),
+  earliest_start: z.string().nullable(),
+  warranty: z.string().trim().max(40),
   message: z.string().trim().min(1, "Add a short note").max(1000, "Keep it under 1000 characters"),
 });
 
@@ -39,6 +48,7 @@ function ProjectDetail() {
   const { data: project, isLoading } = useQuery(projectQuery(id));
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
+  const [extra, setExtra] = useState({ materials: "", labor: "", disposal: "", duration_days: "", earliest_start: "", warranty: "" });
   const [trade, setTrade] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -55,6 +65,10 @@ function ProjectDetail() {
   const isOwner = user?.id === project.owner_id;
   const myBid = bids.find((b) => b.contractor_id === user?.id);
   const isOpen = project.status === "open";
+  const total = project.bid_count ?? 0;
+  const full = total >= MAX_BIDS;
+  const budget = formatBudget(project.budget_min, project.budget_max);
+  const aiQs = toAiQuestions(project.ai_questions).filter((q) => q.answer);
 
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ["project", id] });
@@ -71,7 +85,7 @@ function ProjectDetail() {
   async function submitBid(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
-    const parsed = bidSchema.safeParse({ amount, message });
+    const parsed = bidSchema.safeParse({ amount, message, ...extra, earliest_start: extra.earliest_start || null });
     if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message);
     setBusy(true);
     const { error } = await supabase.from("bids").insert({
@@ -81,14 +95,32 @@ function ProjectDetail() {
       trade: trade.trim().slice(0, 60) || project!.category,
       amount: parsed.data.amount,
       message: parsed.data.message,
+      materials: parsed.data.materials,
+      labor: parsed.data.labor,
+      disposal: parsed.data.disposal,
+      duration_days: parsed.data.duration_days,
+      earliest_start: parsed.data.earliest_start,
+      warranty: parsed.data.warranty || null,
     });
     setBusy(false);
-    if (error) return void toast.error("Couldn't send your bid. Try again.");
+    if (error) return void toast.error(error.message.includes("full") ? "Sorry — this project already has 5 bids." : "Couldn't send your bid. Try again.");
     toast.success("Your bid was sent to the homeowner.");
     setAmount("");
     setMessage("");
+    setExtra({ materials: "", labor: "", disposal: "", duration_days: "", earliest_start: "", warranty: "" });
     refresh();
   }
+
+  if (project.status === "draft")
+    return (
+      <main className="mx-auto max-w-2xl px-6 pb-20 pt-10">
+        {isOwner ? (
+          <FollowUpStep projectId={id} initial={toAiQuestions(project.ai_questions)} onDone={refresh} />
+        ) : (
+          <p className="text-muted-foreground">This project isn't live yet.</p>
+        )}
+      </main>
+    );
 
   async function withdraw(bidId: string) {
     const { error } = await supabase.from("bids").delete().eq("id", bidId);
@@ -110,6 +142,7 @@ function ProjectDetail() {
               <h1 className="font-display mt-1 text-balance text-3xl">{project.title}</h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 Posted by {project.owner_name} · wanted by {formatDate(project.desired_date)}
+                {budget && ` · budget ${budget}`}
               </p>
               <p className="mt-3 max-w-[60ch] text-pretty text-sm leading-relaxed text-secondary-foreground">
                 {project.description}
@@ -124,14 +157,29 @@ function ProjectDetail() {
                   ))}
                 </dl>
               )}
+              {aiQs.length > 0 && (
+                <dl className="mt-4 grid gap-y-2 text-sm">
+                  {aiQs.map((q, i) => (
+                    <div key={i}>
+                      <dt className="text-xs text-muted-foreground">{q.question}</dt>
+                      <dd className="font-medium">{q.answer}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
             </div>
             <span className="shrink-0 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium text-muted-foreground ring-1 ring-border">
-              {bids.length} {bids.length === 1 ? "bid" : "bids"}
+              {total} of {MAX_BIDS} bids
             </span>
           </div>
 
           <div className="mt-6 space-y-3">
-            {bids.length === 0 && <p className="text-sm text-muted-foreground">No bids yet — check back soon.</p>}
+            {isOwner && bids.length === 0 && <p className="text-sm text-muted-foreground">No bids yet — check back soon.</p>}
+            {!isOwner && (
+              <p className="text-sm text-muted-foreground">
+                Bids are sealed — only the homeowner sees prices. {total} of {MAX_BIDS} bid spots taken{full ? " · bidding full" : ""}.
+              </p>
+            )}
             {bids.map((b) => {
               const accepted = project.accepted_bid_id === b.id;
               return (
@@ -149,6 +197,17 @@ function ProjectDetail() {
                         {b.trade && ` · ${b.trade}`}
                       </p>
                       <p className="text-xs text-muted-foreground">"{b.message}"</p>
+                      <p className="mt-1 text-xs text-secondary-foreground">
+                        {[
+                          b.materials != null && `Materials ${formatMoney(Number(b.materials))}`,
+                          b.labor != null && `Labor ${formatMoney(Number(b.labor))}`,
+                          b.disposal != null && `Disposal ${formatMoney(Number(b.disposal))}`,
+                          b.duration_days && `${b.duration_days} ${b.duration_days === 1 ? "day" : "days"}`,
+                          b.earliest_start && `Start ${formatDate(b.earliest_start)}`,
+                          b.warranty && `Warranty ${b.warranty}`,
+                        ].filter(Boolean).join(" · ")}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">Final quote subject to site inspection.</p>
                     </div>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
@@ -167,6 +226,13 @@ function ProjectDetail() {
               );
             })}
           </div>
+          {isOwner && bids.length >= 2 && (
+            <BidComparison
+              key={bids.map((b) => b.id).join()}
+              projectId={id}
+              saved={(project.comparison as unknown as Comparison | null) ?? null}
+            />
+          )}
         </div>
 
         <aside className="frosted h-fit rounded-2xl p-6">
@@ -181,7 +247,7 @@ function ProjectDetail() {
               <p className="mt-1 text-sm text-muted-foreground">
                 Compare the bids and press "Accept bid" on the one you want. Bids are sorted lowest price first.
               </p>
-              {bids.length === 0 ? (
+              {total === 0 ? (
                 <Button asChild variant="secondary" className="mt-5 w-full">
                   <Link to="/edit/$id" params={{ id }}>Edit project</Link>
                 </Button>
@@ -202,13 +268,18 @@ function ProjectDetail() {
               <h2 className="text-lg font-semibold">You've bid {formatMoney(Number(myBid.amount))}</h2>
               <p className="mt-1 text-sm text-muted-foreground">The homeowner will pick a bid soon.</p>
             </>
+          ) : full ? (
+            <>
+              <h2 className="text-lg font-semibold">Bidding full</h2>
+              <p className="mt-1 text-sm text-muted-foreground">This project already has {MAX_BIDS} bids.</p>
+            </>
           ) : (
             <form onSubmit={submitBid}>
               <h2 className="text-lg font-semibold">Place a bid</h2>
               <p className="mt-1 text-sm text-muted-foreground">Add your price and a short note to the homeowner.</p>
               <div className="mt-5 space-y-4">
                 <label className="block">
-                  <span className="text-xs font-medium text-muted-foreground">Your price</span>
+                  <span className="text-xs font-medium text-muted-foreground">Estimated total</span>
                   <div className="field mt-1.5 flex items-center gap-1 py-0">
                     <span className="text-muted-foreground">$</span>
                     <input
@@ -219,6 +290,28 @@ function ProjectDetail() {
                       className="w-full bg-transparent py-2.5 outline-none"
                     />
                   </div>
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["materials", "labor", "disposal"] as const).map((k) => (
+                    <label key={k} className="block">
+                      <span className="text-xs font-medium capitalize text-muted-foreground">{k}</span>
+                      <input inputMode="decimal" value={extra[k]} onChange={(e) => setExtra({ ...extra, [k]: e.target.value })} placeholder="$" className="field mt-1.5" />
+                    </label>
+                  ))}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="block">
+                    <span className="text-xs font-medium text-muted-foreground">Days to finish</span>
+                    <input inputMode="numeric" value={extra.duration_days} onChange={(e) => setExtra({ ...extra, duration_days: e.target.value })} placeholder="2" className="field mt-1.5" />
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-medium text-muted-foreground">Earliest start</span>
+                    <input type="date" value={extra.earliest_start} onChange={(e) => setExtra({ ...extra, earliest_start: e.target.value })} className="field mt-1.5" />
+                  </label>
+                </div>
+                <label className="block">
+                  <span className="text-xs font-medium text-muted-foreground">Warranty (optional)</span>
+                  <input value={extra.warranty} maxLength={40} onChange={(e) => setExtra({ ...extra, warranty: e.target.value })} placeholder="2 yr" className="field mt-1.5" />
                 </label>
                 <label className="block">
                   <span className="text-xs font-medium text-muted-foreground">Your trade (optional)</span>
