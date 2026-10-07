@@ -192,7 +192,29 @@ function VerifyPage() {
               <span className="text-sm">I'm licensed & insured</span>
               <Switch checked={form.insured} onCheckedChange={(v) => setForm({ ...form, insured: v })} />
             </label>
-            {form.insured && <input value={form.insuranceDetails} onChange={set("insuranceDetails")} maxLength={300} placeholder="Insurance company & policy or license number" className="field" />}
+            {form.insured && (
+              <div className="space-y-2">
+                <input value={form.insuranceDetails} onChange={set("insuranceDetails")} maxLength={300} placeholder="Insurance company & policy or license number" className="field" />
+                <div>
+                  <p className="text-sm font-medium">Proof of insurance or license</p>
+                  <p className="text-xs text-muted-foreground">Required — upload up to {MAX_INSURANCE_IMAGES} images (e.g. your certificate of insurance or license).</p>
+                  <div className="mt-2 grid grid-cols-5 gap-2">
+                    {insuranceImages.map((p) => (
+                      <div key={p} className="relative">
+                        <ProjectImage url={p} alt="Insurance proof" className="aspect-square w-full" />
+                        <button type="button" aria-label="Remove image" onClick={() => setInsuranceImages(insuranceImages.filter((x) => x !== p))} className="absolute right-1 top-1 rounded-full bg-background/80 p-0.5"><X className="size-3" /></button>
+                      </div>
+                    ))}
+                    {insuranceImages.length < MAX_INSURANCE_IMAGES && (
+                      <label className="grid aspect-square cursor-pointer place-items-center rounded-lg bg-secondary text-muted-foreground ring-1 ring-border">
+                        {uploadingInsurance ? <LoaderCircle className="size-5 animate-spin" /> : <ImagePlus className="size-5" />}
+                        <input type="file" accept="image/*" multiple className="hidden" disabled={uploadingInsurance} onChange={(e) => uploadInsurance(e.target.files)} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <div>
             <p className="text-sm font-medium">Photos of past work</p>
