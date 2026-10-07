@@ -131,7 +131,7 @@ export const listVerificationApplications = createServerFn({ method: "GET" })
 
 export const reviewVerificationApplication = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { id: string; decision: "approved" | "rejected"; note?: string }) => {
+  .inputValidator((d: { id: string; decision: "approved" | "rejected"; note?: string | undefined }) => {
     if (!d.id || (d.decision !== "approved" && d.decision !== "rejected")) throw new Error("Invalid decision");
     return d;
   })

@@ -56,7 +56,7 @@ export const projectQuery = (id: string) =>
       if (!data) return null;
       const { data: bids, error: bidsError } = await supabase.from("bids").select("*, contractor_verified" as "*").eq("project_id", id);
       if (bidsError) throw bidsError;
-      return { ...data, bid_count: (data as typeof data & Partial<WithCount>).bid_count ?? bids?.length ?? 0, bids: (bids ?? []) as (Tables<"bids"> & { contractor_verified?: boolean })[] };
+      return { ...data, owner_verified: !!(data as typeof data & Partial<WithCount>).owner_verified, bid_count: (data as typeof data & Partial<WithCount>).bid_count ?? bids?.length ?? 0, bids: (bids ?? []) as (Tables<"bids"> & { contractor_verified?: boolean })[] };
     },
   });
 
