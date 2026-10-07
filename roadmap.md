@@ -7,3 +7,6 @@
 - [x] Confirm purchase behavior and that subscriptions are not part of the product.
 - [x] Verify the jobs page and payment flow still work in the preview.- [x] Verified Pro contractors ($5 application, admin review before badge) and Verified Homeowners (2+ hires), with verified-only jobs and filters.
 - [x] Owner can turn on admin access from the review page (owner email only).
+
+- [x] Keep a typed bid through the card security check and finish submitting it
+- [x] Homeowner button reads "Hire" (and "Hiring…")
