@@ -30,6 +30,7 @@ export const Route = createFileRoute("/verify")({
 
 const MAX_PHOTOS = 10;
 const MIN_PHOTOS = 3;
+const MAX_INSURANCE_IMAGES = 5;
 
 function PayForm({ onPaid }: { onPaid: () => Promise<void> }) {
   const stripe = useStripe();
@@ -69,7 +70,9 @@ function VerifyPage() {
   const confirm = useServerFn(confirmVerificationPayment);
   const [form, setForm] = useState({ businessName: "", trade: "", website: "", googleUrl: "", yelpUrl: "", thumbtackUrl: "", insured: false, insuranceDetails: "" });
   const [photos, setPhotos] = useState<string[]>([]);
+  const [insuranceImages, setInsuranceImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadingInsurance, setUploadingInsurance] = useState(false);
   const [busy, setBusy] = useState(false);
   const [secret, setSecret] = useState<string | null>(null);
 
@@ -86,6 +89,7 @@ function VerifyPage() {
         insuranceDetails: application.insurance_details ?? "",
       });
       setPhotos(Array.isArray(application.portfolio_images) ? (application.portfolio_images as string[]) : []);
+      setInsuranceImages(Array.isArray(application.insurance_images) ? (application.insurance_images as string[]) : []);
     } else if (displayName) setForm((f) => ({ ...f, businessName: f.businessName || displayName }));
   }, [application, displayName]);
 
