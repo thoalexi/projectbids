@@ -1,10 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, RotateCcw } from "lucide-react";
+import { useState } from "react";
+import { CheckCircle2, ChevronDown, RotateCcw } from "lucide-react";
 import { z } from "zod";
 import { ProjectCard } from "@/components/ProjectCard";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AREAS, CATEGORIES, projectsQuery } from "@/lib/projects";
 import { toAnswers } from "@/lib/questions";
 import { useAuth } from "@/lib/auth";
@@ -12,7 +15,7 @@ import { useAuth } from "@/lib/auth";
 const searchSchema = z.object({
   category: fallback(z.string(), "All").default("All"),
   stage: fallback(z.string(), "All").default("All"),
-  area: fallback(z.string(), "All").default("All"),
+  area: fallback(z.string(), "").default(""),
   due: fallback(z.string(), "Any date").default("Any date"),
   poster: fallback(z.string(), "Anyone").default("Anyone"),
   access: fallback(z.string(), "All jobs").default("All jobs"),
@@ -68,17 +71,17 @@ function Browse() {
   const navigate = useNavigate({ from: "/projects/" });
   const category = ["All", ...CATEGORIES].includes(search.category) ? search.category : "All";
   const stage = ["All", ...STAGES].includes(search.stage) ? search.stage : "All";
-  const area = ["All", ...AREAS].includes(search.area) ? search.area : "All";
+  const areas = search.area.split("|").map((value) => value.trim()).filter((value) => AREAS.includes(value));
   const due = DUE_OPTIONS.includes(search.due) ? search.due : "Any date";
   const poster = POSTER_OPTIONS.includes(search.poster) ? search.poster : "Anyone";
   const access = ACCESS_OPTIONS.includes(search.access) ? search.access : "All jobs";
-  const active = category !== "All" || stage !== "All" || area !== "All" || due !== "Any date" || poster !== "Anyone" || access !== "All jobs";
+  const active = category !== "All" || stage !== "All" || areas.length > 0 || due !== "Any date" || poster !== "Anyone" || access !== "All jobs";
   const list = (data ?? []).filter((project) => {
     const answers = toAnswers(project.answers);
     return project.owner_id !== user?.id
       && (category === "All" || project.category === category)
       && (stage === "All" || answers["stage"] === stage)
-      && (area === "All" || project.location === area)
+      && (areas.length === 0 || areas.includes(project.location))
       && matchesDueDate(project.desired_date, due)
       && (poster === "Anyone" || project.owner_verified)
       && (access === "All jobs" || (access === "Verified Pros only") === (project.contractor_requirement === "verified_only"));
@@ -114,12 +117,7 @@ function Browse() {
               {["All", ...STAGES].map((option) => <option key={option}>{option}</option>)}
             </select>
           </label>
-          <label className="block">
-            <span className="text-xs font-medium text-muted-foreground">Location</span>
-            <select value={area} onChange={(event) => update("area", event.target.value)} className="field mt-1.5">
-              {["All", ...AREAS].map((option) => <option key={option}>{option}</option>)}
-            </select>
-          </label>
+          <AreaSelect value={areas} onToggle={(next) => navigate({ search: (previous) => ({ ...previous, area: next.join("|") }) })} />
           <label className="block">
             <span className="text-xs font-medium text-muted-foreground">Done by</span>
             <select value={due} onChange={(event) => update("due", event.target.value)} className="field mt-1.5">
@@ -146,7 +144,7 @@ function Browse() {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => navigate({ search: { category: "All", stage: "All", area: "All", due: "Any date", poster: "Anyone", access: "All jobs" } })}
+              onClick={() => navigate({ search: { category: "All", stage: "All", area: "", due: "Any date", poster: "Anyone", access: "All jobs" } })}
             >
               <RotateCcw className="size-3.5" /> Clear filters
             </Button>
@@ -178,9 +176,40 @@ function Browse() {
         <div className="mt-10 text-center">
           <p className="font-semibold">No jobs match these filters.</p>
           <p className="mt-1 text-sm text-muted-foreground">Try a different location, hiring stage, or completion date.</p>
-          {active && <Button type="button" variant="secondary" className="mt-4" onClick={() => navigate({ search: { category: "All", stage: "All", area: "All", due: "Any date", poster: "Anyone", access: "All jobs" } })}>Clear filters</Button>}
+          {active && <Button type="button" variant="secondary" className="mt-4" onClick={() => navigate({ search: { category: "All", stage: "All", area: "", due: "Any date", poster: "Anyone", access: "All jobs" } })}>Clear filters</Button>}
         </div>
       )}
     </main>
+  );
+}
+
+function AreaSelect({ value, onToggle }: { value: string[]; onToggle: (areas: string[]) => void }) {
+  const [open, setOpen] = useState(false);
+  const toggle = (area: string) =>
+    onToggle(value.includes(area) ? value.filter((item) => item !== area) : [...value, area]);
+  return (
+    <div className="block">
+      <span className="text-xs font-medium text-muted-foreground">Location</span>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button type="button" className="field mt-1.5 flex h-10 w-full items-center justify-between gap-2 text-left">
+            <span className="truncate">
+              {value.length === 0 ? "All locations" : value.length === 1 ? value[0] : `${value.length} locations`}
+            </span>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-64 p-1.5">
+          <div className="max-h-64 overflow-y-auto">
+            {AREAS.map((area) => (
+              <label key={area} className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-muted/60">
+                <Checkbox checked={value.includes(area)} onCheckedChange={() => toggle(area)} />
+                <span>{area}</span>
+              </label>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }

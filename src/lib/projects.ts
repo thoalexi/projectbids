@@ -29,6 +29,10 @@ export function formatBudget(min: number | null, max: number | null) {
   return null;
 }
 
+export function firstName(name: string | null | undefined) {
+  return (name ?? "").trim().split(/\s+/)[0] || "Homeowner";
+}
+
 export const projectsQuery = () =>
   queryOptions({
     queryKey: ["projects"],

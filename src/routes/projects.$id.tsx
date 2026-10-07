@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ProjectImage } from "@/components/ProjectImage";
-import { formatBudget, formatDate, formatMoney, MAX_BIDS, projectQuery } from "@/lib/projects";
+import { firstName, formatBudget, formatDate, formatMoney, MAX_BIDS, projectQuery } from "@/lib/projects";
 import { BidComparison, FollowUpStep, toAiQuestions } from "@/components/ProjectAi";
 import type { Comparison } from "@/lib/ai.functions";
 import { QUESTIONS, toAnswers, toOwnerQuestions } from "@/lib/questions";
@@ -296,7 +296,7 @@ function ProjectDetail() {
               </span>
               <h1 className="font-display mt-1 text-balance text-3xl">{project.title}</h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Posted by {project.owner_name}
+                Posted by {firstName(project.owner_name)}
                 {project.owner_verified && <span className="ml-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold text-success ring-1 ring-success">Verified Homeowner</span>}
                 {project.contractor_requirement === "verified_only" && <span className="ml-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold text-primary ring-1 ring-primary">Verified Pros only</span>}
                 {" "}· wanted by {formatDate(project.desired_date)}

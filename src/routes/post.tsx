@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
+import { firstName } from "@/lib/projects";
 import { Button } from "@/components/ui/button";
 import { ProjectForm } from "@/components/ProjectForm";
 
@@ -48,7 +49,7 @@ function PostProject() {
         onSubmit={async (v) => {
           const { data, error } = await supabase
             .from("projects")
-            .insert({ ...v, status: "draft", owner_id: user.id, owner_name: displayName || "Homeowner" })
+            .insert({ ...v, status: "draft", owner_id: user.id, owner_name: firstName(displayName) })
             .select("id")
             .single();
           if (error || !data) return void toast.error("Couldn't post your project. Try again.");
