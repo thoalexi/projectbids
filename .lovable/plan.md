@@ -1,20 +1,22 @@
-# Simplify the hire button label
+# Fix bid submission after adding a card + simplify the Hire button
 
-## Goal
-On the homeowner's project page, the button next to each bid reads "Hire & charge fee". It should read just "Hire".
+## 1. Bids lost after saving a card (bug)
+What happened: no new bid was saved after you entered your card. The card screen can send the browser away for a security check and then back to the project page. When it comes back, the bid you typed is gone, so nothing gets submitted and the form looks blank.
 
-## What changes
-- The bid card button label becomes "Hire" (src/routes/projects.$id.tsx, line 379).
-- Everything the button does stays exactly as it is: it still charges the winning contractor's saved card and awards the job only after payment clears.
-- The disabled behavior while a payment is in flight is unchanged, so the homeowner cannot double-hire.
+Fix:
+- Save the bid you typed (price, breakdown, message, answers, photos) on your device the moment you tap Continue, so it survives the security check.
+- When you come back from the check, finish submitting the bid automatically and show "Your bid was sent to the homeowner."
+- If something still fails, keep your bid filled in and show a clear message explaining what to try, instead of clearing the form.
+- Clear the saved copy only after the bid is accepted, or if you cancel.
 
-## Also worth deciding (say yes or no)
-- While a hire is processing, the same button currently reads "Charging…" on the homeowner's screen. Changing it to "Hiring…" keeps the fee talk off the homeowner's side entirely.
-- The confirmation message after a successful hire currently reads "Payment confirmed — the contractor is hired." It could read "You're hired — the contractor is confirmed." (or similar) instead.
-
-These two are not part of your request; I'll leave them as-is unless you say otherwise.
+## 2. Hire button wording
+- On the homeowner's bid list, "Hire & charge fee" becomes "Hire".
+- While a hire is processing, "Charging…" becomes "Hiring…".
+- What the button does stays the same: the job is awarded only after the contractor's fee clears.
 
 ## Technical notes
-- One text literal in the button's label expression; no logic, styling, or server-side change.
-- Contractor-side wording that explains the success fee (the bid form's "Nothing is charged now…" and the bid-form footer) is untouched — that audience does need it.
-- Verify the build is clean and the button reads "Hire" and still hires in the preview.
+- src/routes/projects.$id.tsx: persist `pendingBid` + form fields to sessionStorage keyed by project id before opening the card dialog; on mount, read `setup_intent` / `redirect_status` query params, restore the draft, call `submitBidWithPaymentMethod`, then strip params from the URL. Do not reset form state on error.
+- PaymentMethodSetup: return_url includes the project path; surface server errors in the dialog.
+- Button label text change at the owner bid card (line ~379).
+- Add both tasks to roadmap.md.
+- Verify in the preview with a test card (including one that requires a security check) that a bid is saved and appears in My Bids.
