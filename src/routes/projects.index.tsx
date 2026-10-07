@@ -71,17 +71,17 @@ function Browse() {
   const navigate = useNavigate({ from: "/projects/" });
   const category = ["All", ...CATEGORIES].includes(search.category) ? search.category : "All";
   const stage = ["All", ...STAGES].includes(search.stage) ? search.stage : "All";
-  const area = ["All", ...AREAS].includes(search.area) ? search.area : "All";
+  const areas = search.area.split(",").map((value) => value.trim()).filter((value) => AREAS.includes(value));
   const due = DUE_OPTIONS.includes(search.due) ? search.due : "Any date";
   const poster = POSTER_OPTIONS.includes(search.poster) ? search.poster : "Anyone";
   const access = ACCESS_OPTIONS.includes(search.access) ? search.access : "All jobs";
-  const active = category !== "All" || stage !== "All" || area !== "All" || due !== "Any date" || poster !== "Anyone" || access !== "All jobs";
+  const active = category !== "All" || stage !== "All" || areas.length > 0 || due !== "Any date" || poster !== "Anyone" || access !== "All jobs";
   const list = (data ?? []).filter((project) => {
     const answers = toAnswers(project.answers);
     return project.owner_id !== user?.id
       && (category === "All" || project.category === category)
       && (stage === "All" || answers["stage"] === stage)
-      && (area === "All" || project.location === area)
+      && (areas.length === 0 || areas.includes(project.location))
       && matchesDueDate(project.desired_date, due)
       && (poster === "Anyone" || project.owner_verified)
       && (access === "All jobs" || (access === "Verified Pros only") === (project.contractor_requirement === "verified_only"));
@@ -117,12 +117,7 @@ function Browse() {
               {["All", ...STAGES].map((option) => <option key={option}>{option}</option>)}
             </select>
           </label>
-          <label className="block">
-            <span className="text-xs font-medium text-muted-foreground">Location</span>
-            <select value={area} onChange={(event) => update("area", event.target.value)} className="field mt-1.5">
-              {["All", ...AREAS].map((option) => <option key={option}>{option}</option>)}
-            </select>
-          </label>
+          <AreaSelect value={areas} onToggle={(next) => navigate({ search: (previous) => ({ ...previous, area: next.join(",") }) })} />
           <label className="block">
             <span className="text-xs font-medium text-muted-foreground">Done by</span>
             <select value={due} onChange={(event) => update("due", event.target.value)} className="field mt-1.5">
