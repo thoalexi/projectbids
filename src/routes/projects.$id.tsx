@@ -177,7 +177,6 @@ function ProjectDetail() {
     const result = await acceptBidAndChargeFee({ data: { projectId: id, bidId, environment: getStripeEnvironment() } });
     setBusy(false);
     if ("error" in result) return void toast.error(result.error);
-    toast.success(result.paid ? "Payment confirmed — the contractor is hired." : "Payment is processing. The project will update when it clears.");
     refresh();
   }
 
