@@ -477,6 +477,12 @@ function ProjectDetail() {
           )}
         </aside>
       </div>
+      <Dialog open={!!lightbox} onOpenChange={(o) => !o && setLightbox(null)}>
+        <DialogContent className="max-w-2xl">
+          <DialogTitle className="sr-only">Past work photo</DialogTitle>
+          {lightbox && <ProjectImage url={lightbox} alt="Past work" className="aspect-[4/3] w-full" />}
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
