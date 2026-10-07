@@ -182,3 +182,34 @@ function Browse() {
     </main>
   );
 }
+
+function AreaSelect({ value, onToggle }: { value: string[]; onToggle: (areas: string[]) => void }) {
+  const [open, setOpen] = useState(false);
+  const toggle = (area: string) =>
+    onToggle(value.includes(area) ? value.filter((item) => item !== area) : [...value, area]);
+  return (
+    <div className="block">
+      <span className="text-xs font-medium text-muted-foreground">Location</span>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button type="button" className="field mt-1.5 flex h-10 w-full items-center justify-between gap-2 text-left">
+            <span className="truncate">
+              {value.length === 0 ? "All locations" : value.length === 1 ? value[0] : `${value.length} locations`}
+            </span>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent align="start" className="w-64 p-1.5">
+          <div className="max-h-64 overflow-y-auto">
+            {AREAS.map((area) => (
+              <label key={area} className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-muted/60">
+                <Checkbox checked={value.includes(area)} onCheckedChange={() => toggle(area)} />
+                <span>{area}</span>
+              </label>
+            ))}
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
