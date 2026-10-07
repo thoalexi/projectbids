@@ -48,7 +48,7 @@ function PostProject() {
         onSubmit={async (v) => {
           const { data, error } = await supabase
             .from("projects")
-            .insert({ ...v, status: "draft", owner_id: user.id, owner_name: displayName || "Homeowner" })
+            .insert({ ...v, status: "draft", owner_id: user.id, owner_name: firstName(displayName) })
             .select("id")
             .single();
           if (error || !data) return void toast.error("Couldn't post your project. Try again.");
