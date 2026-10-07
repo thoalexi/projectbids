@@ -20,30 +20,48 @@ export type Database = {
           contractor_id: string
           contractor_name: string
           created_at: string
+          disposal: number | null
+          duration_days: number | null
+          earliest_start: string | null
           id: string
+          labor: number | null
+          materials: number | null
           message: string
           project_id: string
           trade: string | null
+          warranty: string | null
         }
         Insert: {
           amount: number
           contractor_id: string
           contractor_name: string
           created_at?: string
+          disposal?: number | null
+          duration_days?: number | null
+          earliest_start?: string | null
           id?: string
+          labor?: number | null
+          materials?: number | null
           message?: string
           project_id: string
           trade?: string | null
+          warranty?: string | null
         }
         Update: {
           amount?: number
           contractor_id?: string
           contractor_name?: string
           created_at?: string
+          disposal?: number | null
+          duration_days?: number | null
+          earliest_start?: string | null
           id?: string
+          labor?: number | null
+          materials?: number | null
           message?: string
           project_id?: string
           trade?: string | null
+          warranty?: string | null
         }
         Relationships: [
           {
@@ -79,8 +97,13 @@ export type Database = {
       projects: {
         Row: {
           accepted_bid_id: string | null
+          ai_questions: Json
           answers: Json
+          budget_max: number | null
+          budget_min: number | null
           category: string
+          comparison: Json | null
+          comparison_bid_hash: string | null
           created_at: string
           description: string
           desired_date: string
@@ -94,8 +117,13 @@ export type Database = {
         }
         Insert: {
           accepted_bid_id?: string | null
+          ai_questions?: Json
           answers?: Json
+          budget_max?: number | null
+          budget_min?: number | null
           category: string
+          comparison?: Json | null
+          comparison_bid_hash?: string | null
           created_at?: string
           description: string
           desired_date: string
@@ -109,8 +137,13 @@ export type Database = {
         }
         Update: {
           accepted_bid_id?: string | null
+          ai_questions?: Json
           answers?: Json
+          budget_max?: number | null
+          budget_min?: number | null
           category?: string
+          comparison?: Json | null
+          comparison_bid_hash?: string | null
           created_at?: string
           description?: string
           desired_date?: string
@@ -129,7 +162,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      bid_count: {
+        Args: { p: Database["public"]["Tables"]["projects"]["Row"] }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
