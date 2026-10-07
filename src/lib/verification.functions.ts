@@ -14,6 +14,7 @@ type ApplicationInput = {
   thumbtackUrl?: string | null;
   insured: boolean;
   insuranceDetails?: string | null;
+  insuranceImages?: string[];
   portfolioImages: string[];
   environment: StripeEnv;
 };
@@ -38,6 +39,8 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
       if (reviews.length === 0) throw new Error("Add at least one Google, Yelp, or Thumbtack review link");
       const images = data.portfolioImages.filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 10);
       if (images.length < 3) throw new Error("Add at least 3 photos of past work");
+      const insuranceImages = (data.insuranceImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 5);
+      if (data.insured && insuranceImages.length === 0) throw new Error("Upload proof of insurance or your license (up to 5 images)");
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: existing } = await supabaseAdmin.from("contractor_verifications").select("*").eq("user_id", context.userId).maybeSingle();
@@ -56,6 +59,7 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
         thumbtack_url: url(data.thumbtackUrl),
         insured: !!data.insured,
         insurance_details: clean(data.insuranceDetails, 300),
+        insurance_images: (data.insured ? insuranceImages : []) as Json,
         portfolio_images: images as Json,
         environment: data.environment,
         status: alreadyPaid ? "pending_review" : "payment_required",

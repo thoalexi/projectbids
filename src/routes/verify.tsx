@@ -30,6 +30,7 @@ export const Route = createFileRoute("/verify")({
 
 const MAX_PHOTOS = 10;
 const MIN_PHOTOS = 3;
+const MAX_INSURANCE_IMAGES = 5;
 
 function PayForm({ onPaid }: { onPaid: () => Promise<void> }) {
   const stripe = useStripe();
@@ -69,7 +70,9 @@ function VerifyPage() {
   const confirm = useServerFn(confirmVerificationPayment);
   const [form, setForm] = useState({ businessName: "", trade: "", website: "", googleUrl: "", yelpUrl: "", thumbtackUrl: "", insured: false, insuranceDetails: "" });
   const [photos, setPhotos] = useState<string[]>([]);
+  const [insuranceImages, setInsuranceImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [uploadingInsurance, setUploadingInsurance] = useState(false);
   const [busy, setBusy] = useState(false);
   const [secret, setSecret] = useState<string | null>(null);
 
@@ -86,6 +89,7 @@ function VerifyPage() {
         insuranceDetails: application.insurance_details ?? "",
       });
       setPhotos(Array.isArray(application.portfolio_images) ? (application.portfolio_images as string[]) : []);
+      setInsuranceImages(Array.isArray(application.insurance_images) ? (application.insurance_images as string[]) : []);
     } else if (displayName) setForm((f) => ({ ...f, businessName: f.businessName || displayName }));
   }, [application, displayName]);
 
@@ -99,20 +103,23 @@ function VerifyPage() {
     );
   if (isLoading) return <main className="mx-auto max-w-xl px-6 py-16 text-muted-foreground">Loading…</main>;
 
-  async function upload(files: FileList | null) {
+  async function uploadTo(files: FileList | null, current: string[], max: number, add: (paths: string[]) => void, setBusyFlag: (v: boolean) => void) {
     if (!files || !user) return;
-    setUploading(true);
+    setBusyFlag(true);
     const added: string[] = [];
-    for (const file of Array.from(files).slice(0, MAX_PHOTOS - photos.length)) {
-      if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) { toast.error("Photos must be images under 10 MB."); continue; }
+    for (const file of Array.from(files).slice(0, max - current.length)) {
+      if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) { toast.error("Images must be under 10 MB."); continue; }
       const path = `${user.id}/verification/${crypto.randomUUID()}.${file.name.split(".").pop() || "jpg"}`;
       const { error } = await supabase.storage.from("project-photos").upload(path, file, { contentType: file.type });
-      if (error) toast.error("Couldn't upload a photo.");
+      if (error) toast.error("Couldn't upload an image.");
       else added.push(`storage:${path}`);
     }
-    setPhotos((p) => [...p, ...added]);
-    setUploading(false);
+    add(added);
+    setBusyFlag(false);
   }
+
+  const upload = (files: FileList | null) => uploadTo(files, photos, MAX_PHOTOS, (a) => setPhotos((p) => [...p, ...a]), setUploading);
+  const uploadInsurance = (files: FileList | null) => uploadTo(files, insuranceImages, MAX_INSURANCE_IMAGES, (a) => setInsuranceImages((p) => [...p, ...a]), setUploadingInsurance);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -121,8 +128,9 @@ function VerifyPage() {
     const links = [form.googleUrl, form.yelpUrl, form.thumbtackUrl, form.website].filter((l) => l.trim());
     if (links.some((l) => !/^https:\/\//i.test(l.trim()))) return void toast.error("Links must start with https://");
     if (![form.googleUrl, form.yelpUrl, form.thumbtackUrl].some((l) => l.trim())) return void toast.error("Add at least one Google, Yelp or Thumbtack review link");
+    if (form.insured && insuranceImages.length === 0) return void toast.error("Upload proof of your insurance or license (up to 5 images)");
     setBusy(true);
-    const res = await start({ data: { ...form, portfolioImages: photos, environment: getStripeEnvironment() } });
+    const res = await start({ data: { ...form, portfolioImages: photos, insuranceImages, environment: getStripeEnvironment() } });
     setBusy(false);
     if ("error" in res && res.error) return void toast.error(res.error);
     if ("submitted" in res) { toast.success("Resubmitted for review."); refetch(); return; }
@@ -184,7 +192,29 @@ function VerifyPage() {
               <span className="text-sm">I'm licensed & insured</span>
               <Switch checked={form.insured} onCheckedChange={(v) => setForm({ ...form, insured: v })} />
             </label>
-            {form.insured && <input value={form.insuranceDetails} onChange={set("insuranceDetails")} maxLength={300} placeholder="Insurance company & policy or license number" className="field" />}
+            {form.insured && (
+              <div className="space-y-2">
+                <input value={form.insuranceDetails} onChange={set("insuranceDetails")} maxLength={300} placeholder="Insurance company & policy or license number" className="field" />
+                <div>
+                  <p className="text-sm font-medium">Proof of insurance or license</p>
+                  <p className="text-xs text-muted-foreground">Required — upload up to {MAX_INSURANCE_IMAGES} images (e.g. your certificate of insurance or license).</p>
+                  <div className="mt-2 grid grid-cols-5 gap-2">
+                    {insuranceImages.map((p) => (
+                      <div key={p} className="relative">
+                        <ProjectImage url={p} alt="Insurance proof" className="aspect-square w-full" />
+                        <button type="button" aria-label="Remove image" onClick={() => setInsuranceImages(insuranceImages.filter((x) => x !== p))} className="absolute right-1 top-1 rounded-full bg-background/80 p-0.5"><X className="size-3" /></button>
+                      </div>
+                    ))}
+                    {insuranceImages.length < MAX_INSURANCE_IMAGES && (
+                      <label className="grid aspect-square cursor-pointer place-items-center rounded-lg bg-secondary text-muted-foreground ring-1 ring-border">
+                        {uploadingInsurance ? <LoaderCircle className="size-5 animate-spin" /> : <ImagePlus className="size-5" />}
+                        <input type="file" accept="image/*" multiple className="hidden" disabled={uploadingInsurance} onChange={(e) => uploadInsurance(e.target.files)} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           <div>
             <p className="text-sm font-medium">Photos of past work</p>
@@ -204,7 +234,7 @@ function VerifyPage() {
               )}
             </div>
           </div>
-          <Button type="submit" disabled={busy || uploading} className="w-full">
+          <Button type="submit" disabled={busy || uploading || uploadingInsurance} className="w-full">
             {busy && <LoaderCircle className="size-4 animate-spin" />}
             {status === "rejected" && application?.stripe_payment_intent_id ? "Resubmit for review" : "Continue to $5 payment"}
           </Button>

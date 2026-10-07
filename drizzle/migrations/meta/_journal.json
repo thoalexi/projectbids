@@ -71,6 +71,13 @@
       "when": 1791401805564,
       "tag": "0009_verification",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791403233558,
+      "tag": "0010_verification_insurance_images",
+      "breakpoints": true
     }
   ]
 }
