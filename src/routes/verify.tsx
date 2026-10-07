@@ -103,20 +103,23 @@ function VerifyPage() {
     );
   if (isLoading) return <main className="mx-auto max-w-xl px-6 py-16 text-muted-foreground">Loading…</main>;
 
-  async function upload(files: FileList | null) {
+  async function uploadTo(files: FileList | null, current: string[], max: number, add: (paths: string[]) => void, setBusyFlag: (v: boolean) => void) {
     if (!files || !user) return;
-    setUploading(true);
+    setBusyFlag(true);
     const added: string[] = [];
-    for (const file of Array.from(files).slice(0, MAX_PHOTOS - photos.length)) {
-      if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) { toast.error("Photos must be images under 10 MB."); continue; }
+    for (const file of Array.from(files).slice(0, max - current.length)) {
+      if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) { toast.error("Images must be under 10 MB."); continue; }
       const path = `${user.id}/verification/${crypto.randomUUID()}.${file.name.split(".").pop() || "jpg"}`;
       const { error } = await supabase.storage.from("project-photos").upload(path, file, { contentType: file.type });
-      if (error) toast.error("Couldn't upload a photo.");
+      if (error) toast.error("Couldn't upload an image.");
       else added.push(`storage:${path}`);
     }
-    setPhotos((p) => [...p, ...added]);
-    setUploading(false);
+    add(added);
+    setBusyFlag(false);
   }
+
+  const upload = (files: FileList | null) => uploadTo(files, photos, MAX_PHOTOS, (a) => setPhotos((p) => [...p, ...a]), setUploading);
+  const uploadInsurance = (files: FileList | null) => uploadTo(files, insuranceImages, MAX_INSURANCE_IMAGES, (a) => setInsuranceImages((p) => [...p, ...a]), setUploadingInsurance);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -125,8 +128,9 @@ function VerifyPage() {
     const links = [form.googleUrl, form.yelpUrl, form.thumbtackUrl, form.website].filter((l) => l.trim());
     if (links.some((l) => !/^https:\/\//i.test(l.trim()))) return void toast.error("Links must start with https://");
     if (![form.googleUrl, form.yelpUrl, form.thumbtackUrl].some((l) => l.trim())) return void toast.error("Add at least one Google, Yelp or Thumbtack review link");
+    if (form.insured && insuranceImages.length === 0) return void toast.error("Upload proof of your insurance or license (up to 5 images)");
     setBusy(true);
-    const res = await start({ data: { ...form, portfolioImages: photos, environment: getStripeEnvironment() } });
+    const res = await start({ data: { ...form, portfolioImages: photos, insuranceImages, environment: getStripeEnvironment() } });
     setBusy(false);
     if ("error" in res && res.error) return void toast.error(res.error);
     if ("submitted" in res) { toast.success("Resubmitted for review."); refetch(); return; }
