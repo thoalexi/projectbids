@@ -10,6 +10,7 @@ export const CATEGORIES = [
   "Landscaping",
   "Pressure washing",
   "Junk removal",
+  "Handyman",
 ];
 
 export const AREAS = [
