@@ -186,6 +186,7 @@ function Browse() {
 
 function AreaSelect({ value, onToggle }: { value: string[]; onToggle: (areas: string[]) => void }) {
   const [open, setOpen] = useState(false);
+  console.log("[area-select render] value =", JSON.stringify(value));
   const toggle = (area: string) =>
     onToggle(value.includes(area) ? value.filter((item) => item !== area) : [...value, area]);
   return (
