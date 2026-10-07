@@ -180,7 +180,7 @@ function ProjectDetail() {
       setupIntentId: "",
       amount: parsed.data.amount,
       contractorName: displayName || "Contractor",
-      trade: trade.trim().slice(0, 60) || project.category,
+      trade: trade.trim().slice(0, 60) || project?.category || null,
       message: parsed.data.message,
       materials: parsed.data.materials,
       labor: parsed.data.labor,

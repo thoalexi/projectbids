@@ -35,9 +35,11 @@ export const compareBids = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(input)
   .handler(async ({ data, context }) => {
-    const { data: p } = await context.supabase.from("projects").select("*, bids(*)").eq("id", data.projectId).maybeSingle();
+    const { data: p } = await context.supabase.from("projects").select("*").eq("id", data.projectId).maybeSingle();
     if (!p || p.owner_id !== context.userId) throw new Error("Only the homeowner can compare bids.");
-    const bids = [...(p.bids ?? [])].sort((a, b) => a.created_at.localeCompare(b.created_at));
+    const { data: bidRows, error: bidError } = await context.supabase.from("bids").select("*").eq("project_id", data.projectId);
+    if (bidError) throw bidError;
+    const bids = [...(bidRows ?? [])].sort((a, b) => a.created_at.localeCompare(b.created_at));
     if (bids.length < 2) throw new Error("You need at least two bids to compare.");
     const hash = bids.map((b) => `${b.id}:${b.amount}`).join("|");
     if (p.comparison && p.comparison_bid_hash === hash) return p.comparison as unknown as Comparison;

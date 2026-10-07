@@ -29,11 +29,20 @@ function MyPosts() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("id, title, status, category, location, desired_date, created_at, bid_count, bids(amount)" as "id, title, status, category, location, desired_date, created_at, bids(amount)")
+        .select("id, title, status, category, location, desired_date, created_at, bid_count" as "id, title, status, category, location, desired_date, created_at")
         .eq("owner_id", user!.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as (NonNullable<typeof data>[number] & { bid_count: number })[];
+      const ids = data.map((project) => project.id);
+      const { data: bids, error: bidError } = ids.length
+        ? await supabase.from("bids").select("project_id, amount").in("project_id", ids)
+        : { data: [], error: null };
+      if (bidError) throw bidError;
+      return data.map((project) => ({
+        ...project,
+        bid_count: (project as typeof project & { bid_count?: number }).bid_count ?? 0,
+        bids: bids.filter((bid) => bid.project_id === project.id),
+      }));
     },
   });
 
