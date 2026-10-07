@@ -192,7 +192,7 @@ export const acceptBidAndChargeFee = createServerFn({ method: "POST" })
       await supabaseAdmin.from("bid_payments").update({ stripe_payment_intent_id: intent.id, updated_at: new Date().toISOString() }).eq("id", payment.id);
       if (intent.status === "succeeded") {
         const { data: finalized } = await supabaseAdmin.rpc("finalize_paid_bid", { p_payment_intent_id: intent.id });
-        if (!finalized) return { error: "Payment succeeded, but the hire could not be finalized. Support has been notified." };
+        if (!finalized) return { error: "We couldn't complete the hire. Please try again." };
         return { paid: true };
       }
       return { pending: true };
