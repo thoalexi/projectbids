@@ -8,6 +8,13 @@
       "when": 1791392081640,
       "tag": "0000_marketplace_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791392119001,
+      "tag": "0001_project_photos_policies",
+      "breakpoints": true
     }
   ]
 }

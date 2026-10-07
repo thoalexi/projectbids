@@ -1,0 +1,3 @@
+create policy "Anyone can view project photos" on storage.objects for select using (bucket_id = 'project-photos');
+create policy "Users upload own project photos" on storage.objects for insert to authenticated with check (bucket_id = 'project-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "Users delete own project photos" on storage.objects for delete to authenticated using (bucket_id = 'project-photos' and (storage.foldername(name))[1] = auth.uid()::text);
