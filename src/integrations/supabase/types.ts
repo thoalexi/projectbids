@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      bid_payments: {
+        Row: {
+          bid_id: string
+          contractor_id: string
+          created_at: string
+          currency: string
+          environment: string
+          failure_message: string | null
+          fee_amount_cents: number
+          id: string
+          project_id: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_payment_method_id: string | null
+          stripe_setup_intent_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          bid_id: string
+          contractor_id: string
+          created_at?: string
+          currency?: string
+          environment?: string
+          failure_message?: string | null
+          fee_amount_cents: number
+          id?: string
+          project_id: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_payment_method_id?: string | null
+          stripe_setup_intent_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bid_id?: string
+          contractor_id?: string
+          created_at?: string
+          currency?: string
+          environment?: string
+          failure_message?: string | null
+          fee_amount_cents?: number
+          id?: string
+          project_id?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_payment_method_id?: string | null
+          stripe_setup_intent_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bid_payments_bid_id_fkey"
+            columns: ["bid_id"]
+            isOneToOne: true
+            referencedRelation: "bids"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bid_payments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bids: {
         Row: {
           amount: number
@@ -128,12 +197,15 @@ export type Database = {
           created_at: string
           description: string
           desired_date: string
+          expired_at: string | null
           id: string
           image_url: string | null
           location: string
           owner_id: string
           owner_name: string
           owner_questions: Json
+          payment_status: string
+          pending_bid_id: string | null
           status: string
           title: string
         }
@@ -149,12 +221,15 @@ export type Database = {
           created_at?: string
           description: string
           desired_date: string
+          expired_at?: string | null
           id?: string
           image_url?: string | null
           location: string
           owner_id: string
           owner_name?: string
           owner_questions?: Json
+          payment_status?: string
+          pending_bid_id?: string | null
           status?: string
           title: string
         }
@@ -170,16 +245,27 @@ export type Database = {
           created_at?: string
           description?: string
           desired_date?: string
+          expired_at?: string | null
           id?: string
           image_url?: string | null
           location?: string
           owner_id?: string
           owner_name?: string
           owner_questions?: Json
+          payment_status?: string
+          pending_bid_id?: string | null
           status?: string
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "projects_pending_bid_id_fkey"
+            columns: ["pending_bid_id"]
+            isOneToOne: false
+            referencedRelation: "bids"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -190,6 +276,7 @@ export type Database = {
         Args: { p: Database["public"]["Tables"]["projects"]["Row"] }
         Returns: number
       }
+      expire_past_due_projects: { Args: never; Returns: number }
     }
     Enums: {
       [_ in never]: never
