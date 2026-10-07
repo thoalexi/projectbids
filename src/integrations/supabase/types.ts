@@ -163,6 +163,72 @@ export type Database = {
           },
         ]
       }
+      contractor_verifications: {
+        Row: {
+          admin_note: string | null
+          business_name: string
+          created_at: string
+          environment: string
+          google_url: string | null
+          id: string
+          insurance_details: string | null
+          insured: boolean
+          portfolio_images: Json
+          reviewed_at: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          submitted_at: string | null
+          thumbtack_url: string | null
+          trade: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+          yelp_url: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          business_name: string
+          created_at?: string
+          environment?: string
+          google_url?: string | null
+          id?: string
+          insurance_details?: string | null
+          insured?: boolean
+          portfolio_images?: Json
+          reviewed_at?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          submitted_at?: string | null
+          thumbtack_url?: string | null
+          trade?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+          yelp_url?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          business_name?: string
+          created_at?: string
+          environment?: string
+          google_url?: string | null
+          id?: string
+          insurance_details?: string | null
+          insured?: boolean
+          portfolio_images?: Json
+          reviewed_at?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          submitted_at?: string | null
+          thumbtack_url?: string | null
+          trade?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+          yelp_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -194,6 +260,7 @@ export type Database = {
           category: string
           comparison: Json | null
           comparison_bid_hash: string | null
+          contractor_requirement: string
           created_at: string
           description: string
           desired_date: string
@@ -218,6 +285,7 @@ export type Database = {
           category: string
           comparison?: Json | null
           comparison_bid_hash?: string | null
+          contractor_requirement?: string
           created_at?: string
           description: string
           desired_date: string
@@ -242,6 +310,7 @@ export type Database = {
           category?: string
           comparison?: Json | null
           comparison_bid_hash?: string | null
+          contractor_requirement?: string
           created_at?: string
           description?: string
           desired_date?: string
@@ -267,6 +336,24 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -276,14 +363,31 @@ export type Database = {
         Args: { p: Database["public"]["Tables"]["projects"]["Row"] }
         Returns: number
       }
+      contractor_verified: {
+        Args: { b: Database["public"]["Tables"]["bids"]["Row"] }
+        Returns: boolean
+      }
       expire_past_due_projects: { Args: never; Returns: number }
       finalize_paid_bid: {
         Args: { p_payment_intent_id: string }
         Returns: boolean
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_verified_contractor: { Args: { _user_id: string }; Returns: boolean }
+      is_verified_homeowner: { Args: { _user_id: string }; Returns: boolean }
+      owner_verified: {
+        Args: { p: Database["public"]["Tables"]["projects"]["Row"] }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -410,6 +514,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

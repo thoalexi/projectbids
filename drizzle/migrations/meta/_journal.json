@@ -64,6 +64,13 @@
       "when": 1791400429115,
       "tag": "0008_enforce_paid_project_awards",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791401805564,
+      "tag": "0009_verification",
+      "breakpoints": true
     }
   ]
 }
