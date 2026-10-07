@@ -35,7 +35,18 @@ function EditProject() {
   if (loading || isLoading || (project && preview === undefined))
     return <main className="mx-auto max-w-3xl px-6 py-16 text-muted-foreground">Loading…</main>;
 
-  const locked = !project || project.owner_id !== user?.id || project.status === "awarded" || (project.bid_count ?? 0) > 0;
+  if (!user)
+    return (
+      <main className="mx-auto max-w-xl px-6 py-20">
+        <div className="frosted rounded-2xl p-8 text-center">
+          <h1 className="font-display text-3xl">Edit project</h1>
+          <p className="mt-2 text-muted-foreground">Sign in to edit your project.</p>
+          <Link to="/auth" search={{ redirect: `/edit/${id}` }} className="mt-6 inline-block text-primary">Sign in</Link>
+        </div>
+      </main>
+    );
+
+  const locked = !project || project.owner_id !== user.id || project.status === "awarded" || (project.bid_count ?? 0) > 0;
   if (locked)
     return (
       <main className="mx-auto max-w-xl px-6 py-20">

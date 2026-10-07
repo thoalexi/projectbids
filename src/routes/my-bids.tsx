@@ -37,7 +37,7 @@ function MyBids() {
   });
 
   if (loading) return null;
-  if (!user) return <SignInPrompt title="My Bids" />;
+  if (!user) return <SignInPrompt title="My Bids" redirect="/my-bids" />;
 
   const rows = (data ?? []).map((b) => {
     const p = b.projects;

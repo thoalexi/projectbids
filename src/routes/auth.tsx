@@ -1,4 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -7,7 +8,12 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 
+const searchSchema = z.object({
+  redirect: fallback(z.string(), "/").default("/"),
+});
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "Sign in — Quote Slip" },
@@ -27,7 +33,8 @@ const schema = z.object({
 
 function AuthPage() {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
+  const target = redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "/";
   const [mode, setMode] = useState<"in" | "up">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,8 +43,8 @@ function AuthPage() {
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
-    if (user) navigate({ to: "/" });
-  }, [user, navigate]);
+    if (user) window.location.assign(target);
+  }, [user, target]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -61,7 +68,7 @@ function AuthPage() {
   }
 
   async function google() {
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + target });
     if (result.error) toast.error("Google sign-in failed.");
   }
 

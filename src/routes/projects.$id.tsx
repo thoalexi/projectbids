@@ -389,7 +389,7 @@ function ProjectDetail() {
               <h2 className="text-lg font-semibold">Place a bid</h2>
               <p className="mt-1 text-sm text-muted-foreground">Sign in to send your price to the homeowner.</p>
               <Button asChild className="mt-5 w-full">
-                <Link to="/auth">Sign in to bid</Link>
+                <Link to="/auth" search={{ redirect: `/projects/${id}` }}>Sign in to bid</Link>
               </Button>
             </>
           ) : myBid ? (
