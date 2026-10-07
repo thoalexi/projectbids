@@ -18,10 +18,12 @@ import { QUESTIONS, toAnswers, toOwnerQuestions } from "@/lib/questions";
 export const Route = createFileRoute("/projects/$id")({
   head: () => ({
     meta: [
-      { title: "Project details & bids — Quote Slip" },
+      { title: "Project details & bids — Beam Bids" },
       { name: "description", content: "See the project details and compare contractor bids." },
-      { property: "og:title", content: "Project details & bids — Quote Slip" },
+      { property: "og:title", content: "Project details & bids — Beam Bids" },
       { property: "og:description", content: "See the project details and compare contractor bids." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ProjectDetail,
@@ -406,6 +408,10 @@ function ProjectDetail() {
             <form onSubmit={submitBid}>
               <h2 className="text-lg font-semibold">Place a bid</h2>
               <p className="mt-1 text-sm text-muted-foreground">Add your price and a short note to the homeowner.</p>
+              <div className="mt-4 flex gap-2 rounded-lg bg-success/10 p-3 text-sm ring-1 ring-success/25">
+                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
+                <p><span className="font-semibold">This bid is free.</span> You only pay Beam Bids if the homeowner hires you.</p>
+              </div>
               <div className="mt-5 space-y-4">
                 <div className="grid grid-cols-3 gap-2">
                   {(["materials", "labor", "disposal"] as const).map((k) => (

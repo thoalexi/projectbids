@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
     meta: [
-      { title: "How bidding works — Quote Slip" },
-      { name: "description", content: "Post a job, receive bids from contractors, and pick the one you want." },
-      { property: "og:title", content: "How bidding works — Quote Slip" },
-      { property: "og:description", content: "Post a job, receive bids from contractors, and pick the one you want." },
+      { title: "How bidding works — Beam Bids" },
+      { name: "description", content: "Post a job, receive sealed bids, or bid for free and only pay when hired." },
+      { property: "og:title", content: "How bidding works — Beam Bids" },
+      { property: "og:description", content: "Post a job, receive sealed bids, or bid for free and only pay when hired." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: HowItWorks,
@@ -15,7 +17,7 @@ export const Route = createFileRoute("/how-it-works")({
 
 const steps = [
   { n: "01", t: "Post your project", d: "Add a photo, the details and size of the job, and when you'd like it done." },
-  { n: "02", t: "Contractors bid", d: "Up to five Atlanta pros send itemized, sealed bids — only you see the prices." },
+  { n: "02", t: "Contractors bid for free", d: "Up to five Atlanta pros send itemized, sealed bids. There are no pay-per-lead fees." },
   { n: "03", t: "You choose", d: "AI lines up every bid side by side and flags what's missing. Accept the one you trust." },
 ];
 
@@ -31,6 +33,10 @@ function HowItWorks() {
             <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
           </div>
         ))}
+      </div>
+      <div className="mt-5 rounded-lg bg-success/10 p-5 ring-1 ring-success/25">
+        <p className="font-semibold text-success">The end of paying for leads that never become customers.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Contractors only pay Beam Bids after a homeowner hires them. Every losing bid costs $0.</p>
       </div>
       <div className="mt-10 flex gap-3">
         <Button asChild><Link to="/post">Post a project</Link></Button>
