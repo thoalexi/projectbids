@@ -111,6 +111,37 @@ function ProjectDetail() {
       });
   }, [user]);
 
+  // Finish a bid after the card screen returned from a security check (page reload).
+  useEffect(() => {
+    if (!user) return;
+    const params = new URLSearchParams(window.location.search);
+    const setupIntentId = params.get("setup_intent");
+    if (!setupIntentId) return;
+    const clean = () => window.history.replaceState(null, "", window.location.pathname);
+    const raw = sessionStorage.getItem(`beam:pending-bid:${id}`);
+    if (!raw) return clean();
+    if (params.get("redirect_status") !== "succeeded") {
+      clean();
+      return void toast.error("Your card couldn't be saved. Please try again.");
+    }
+    const draft = JSON.parse(raw) as Parameters<typeof submitBidWithPaymentMethod>[0]["data"];
+    setAmount(String(draft.amount));
+    setMessage(draft.message);
+    setBusy(true);
+    submitBidWithPaymentMethod({ data: { ...draft, setupIntentId } })
+      .then((result) => {
+        if ("error" in result) return void toast.error(`Your bid wasn't sent: ${result.error}`);
+        sessionStorage.removeItem(`beam:pending-bid:${id}`);
+        toast.success("Your bid was sent to the homeowner.");
+        setAmount("");
+        setMessage("");
+        refresh();
+      })
+      .catch(() => toast.error("Your bid wasn't sent. Please try again."))
+      .finally(() => { setBusy(false); clean(); });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, id]);
+
   const parts = [extra.materials, extra.labor, extra.disposal].filter((v) => v.trim() !== "");
   const hasBreakdown = parts.length > 0;
   const breakdownSum = Math.round(parts.reduce((s, v) => s + (Number(v) || 0), 0) * 100) / 100;
