@@ -7,6 +7,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { Button } from "@/components/ui/button";
 import { AREAS, CATEGORIES, projectsQuery } from "@/lib/projects";
 import { toAnswers } from "@/lib/questions";
+import { useAuth } from "@/lib/auth";
 
 const searchSchema = z.object({
   category: fallback(z.string(), "All").default("All"),
@@ -57,6 +58,7 @@ function matchesDueDate(value: string, due: string) {
 
 function Browse() {
   const { data, isLoading } = useQuery(projectsQuery());
+  const { user } = useAuth();
   const search = Route.useSearch();
   const navigate = useNavigate({ from: "/projects/" });
   const category = ["All", ...CATEGORIES].includes(search.category) ? search.category : "All";
@@ -66,7 +68,8 @@ function Browse() {
   const active = category !== "All" || stage !== "All" || area !== "All" || due !== "Any date";
   const list = (data ?? []).filter((project) => {
     const answers = toAnswers(project.answers);
-    return (category === "All" || project.category === category)
+    return project.owner_id !== user?.id
+      && (category === "All" || project.category === category)
       && (stage === "All" || answers["stage"] === stage)
       && (area === "All" || project.location === area)
       && matchesDueDate(project.desired_date, due);
