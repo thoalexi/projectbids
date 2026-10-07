@@ -235,6 +235,7 @@ function ProjectDetail() {
     setBusy(false);
     if ("error" in setup) return void toast.error(setup.error);
     setPendingBid(bidData);
+    sessionStorage.setItem(`beam:pending-bid:${id}`, JSON.stringify(bidData));
     setSetupSecret(setup.clientSecret);
   }
 
@@ -242,6 +243,7 @@ function ProjectDetail() {
     if (!pendingBid) throw new Error("Your bid details are missing");
     const result = await submitBidWithPaymentMethod({ data: { ...pendingBid, setupIntentId } });
     if ("error" in result) throw new Error(result.error);
+    sessionStorage.removeItem(`beam:pending-bid:${id}`);
     toast.success("Your bid was sent to the homeowner.");
     setSetupSecret(null);
     setPendingBid(null);
@@ -407,7 +409,7 @@ function ProjectDetail() {
                         <CheckCircle2 className="size-4" /> Hired
                       </span>
                     ) : isOwner && isOpen ? (
-                      <Button size="sm" disabled={busy || project.payment_status === "pending"} onClick={() => accept(b.id)}>{project.payment_status === "pending" && project.pending_bid_id === b.id ? "Charging…" : "Hire & charge fee"}</Button>
+                      <Button size="sm" disabled={busy || project.payment_status === "pending"} onClick={() => accept(b.id)}>{project.payment_status === "pending" && project.pending_bid_id === b.id ? "Hiring…" : "Hire"}</Button>
                     ) : b.contractor_id === user?.id && isOpen ? (
                       <Button size="sm" variant="ghost" onClick={() => withdraw(b.id)}>Withdraw</Button>
                     ) : null}
@@ -605,7 +607,7 @@ function ProjectDetail() {
           {lightbox && <ProjectImage url={lightbox} alt="Past work" className="aspect-[4/3] w-full" />}
         </DialogContent>
       </Dialog>
-      <Dialog open={!!setupSecret} onOpenChange={(open) => { if (!open && !busy) { setSetupSecret(null); setPendingBid(null); } }}>
+      <Dialog open={!!setupSecret} onOpenChange={(open) => { if (!open && !busy) { setSetupSecret(null); setPendingBid(null); sessionStorage.removeItem(`beam:pending-bid:${id}`); } }}>
         <DialogContent className="max-w-xl">
           <DialogTitle>Save a payment method</DialogTitle>
           <p className="text-sm text-muted-foreground">Nothing is charged now. If this bid is hired, the success fee will be {formatFee(currentFee)}.</p>
