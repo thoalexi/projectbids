@@ -68,7 +68,8 @@ function AuthPage() {
   }
 
   async function google() {
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + target });
+    if (target !== "/") sessionStorage.setItem("beam:post-auth-redirect", target);
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (result.error) toast.error("Google sign-in failed.");
   }
 
