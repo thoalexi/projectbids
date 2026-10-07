@@ -49,11 +49,14 @@ export const projectQuery = (id: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("projects")
-        .select("*, bid_count, bids(*)" as "*, bids(*)")
+        .select("*, bid_count" as "*")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
-      return data as (NonNullable<typeof data> & WithCount) | null;
+      if (!data) return null;
+      const { data: bids, error: bidsError } = await supabase.from("bids").select("*").eq("project_id", id);
+      if (bidsError) throw bidsError;
+      return { ...data, bid_count: (data as typeof data & Partial<WithCount>).bid_count ?? bids?.length ?? 0, bids: bids ?? [] };
     },
   });
 

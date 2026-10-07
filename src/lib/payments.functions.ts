@@ -68,7 +68,10 @@ export const createBidCardSetup = createServerFn({ method: "POST" })
 
       const { data: authData } = await context.supabase.auth.getUser();
       const stripe = createStripeClient(data.environment);
-      const customerId = await resolveOrCreateCustomer(stripe, { userId: context.userId, email: authData.user?.email });
+      const customerId = await resolveOrCreateCustomer(stripe, {
+        userId: context.userId,
+        ...(authData.user?.email ? { email: authData.user.email } : {}),
+      });
       const setupIntent = await stripe.setupIntents.create({
         customer: customerId,
         usage: "off_session",
@@ -92,7 +95,7 @@ export const submitBidWithPaymentMethod = createServerFn({ method: "POST" })
     try {
       const stripe = createStripeClient(data.environment);
       const setupIntent = await stripe.setupIntents.retrieve(data.setupIntentId);
-      if (setupIntent.status !== "succeeded" || setupIntent.metadata?.userId !== context.userId || setupIntent.metadata?.projectId !== data.projectId) {
+      if (setupIntent.status !== "succeeded" || setupIntent.metadata?.["userId"] !== context.userId || setupIntent.metadata?.["projectId"] !== data.projectId) {
         throw new Error("Your payment method could not be verified");
       }
       const paymentMethodId = typeof setupIntent.payment_method === "string" ? setupIntent.payment_method : setupIntent.payment_method?.id;

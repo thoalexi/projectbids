@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { AuthProvider } from "@/lib/auth";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -66,7 +67,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Quote Slip — Post home projects, get contractor bids" },
+      { title: "Beam Bids — Post home projects, get contractor bids" },
       { name: "description", content: "Post what needs doing around the house and let local contractors bid on it." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -108,6 +109,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <div className="relative min-h-screen overflow-x-clip">
+          <PaymentTestModeBanner />
           <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
             <div className="absolute -left-24 -top-32 h-[560px] w-[560px] rounded-full bg-glow-amber blur-3xl" />
             <div className="absolute -right-28 top-40 h-[520px] w-[520px] rounded-full bg-glow-sky blur-3xl" />
