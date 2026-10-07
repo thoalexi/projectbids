@@ -36,7 +36,7 @@ export const projectsQuery = () =>
       const { data, error } = await supabase
         .from("projects")
         .select("*, bid_count" as "*")
-        .neq("status", "draft")
+        .eq("status", "open")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as (Tables<"projects"> & WithCount)[];

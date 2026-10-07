@@ -23,6 +23,7 @@ export type ProjectValues = z.infer<typeof schema> & {
   budget_min: number | null;
   budget_max: number | null;
   owner_questions: string[];
+  ai_questions: { question: string; answer: string }[];
 };
 
 const money = (v: string) => {
@@ -53,6 +54,7 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
   });
   const [answers, setAnswers] = useState<Answers>(initial?.answers ?? {});
   const [ownerQs, setOwnerQs] = useState<string[]>(initial?.owner_questions ?? []);
+  const [aiQs, setAiQs] = useState(initial?.ai_questions ?? []);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(initialPreview ?? null);
   const [busy, setBusy] = useState(false);
@@ -71,6 +73,7 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
     if (file && file.size > 10 * 1024 * 1024) return void toast.error("Photo must be under 10 MB");
     const owner_questions = ownerQs.map((q) => q.trim()).filter(Boolean);
     if (owner_questions.some((q) => q.length > 200)) return void toast.error("Keep each question under 200 characters");
+    const ai_questions = aiQs.map((q) => ({ question: q.question, answer: q.answer.trim().slice(0, 500) }));
     setBusy(true);
     let image_url = initial?.image_url ?? null;
     if (file) {
@@ -83,7 +86,7 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
       }
       image_url = `storage:${path}`;
     }
-    await onSubmit({ ...parsed.data, image_url, answers, budget_min, budget_max, owner_questions });
+    await onSubmit({ ...parsed.data, image_url, answers, budget_min, budget_max, owner_questions, ai_questions });
     setBusy(false);
   }
 
@@ -173,6 +176,25 @@ export function ProjectForm({ userId, initial, initialPreview, submitLabel, busy
           className="field mt-1.5 resize-none"
         />
       </label>
+      {aiQs.length > 0 && (
+        <div>
+          <span className="text-sm font-medium">AI follow-up answers</span>
+          <p className="mt-0.5 text-xs text-muted-foreground">Update your answers below. The questions cannot be changed.</p>
+          <div className="mt-3 space-y-4">
+            {aiQs.map((q, i) => (
+              <label key={`${q.question}-${i}`} className="block">
+                <span className="text-sm font-medium">{q.question}</span>
+                <input
+                  value={q.answer}
+                  maxLength={500}
+                  onChange={(e) => setAiQs(aiQs.map((item, j) => (j === i ? { ...item, answer: e.target.value } : item)))}
+                  className="field mt-1.5"
+                />
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
       <div>
         <span className="text-sm font-medium">Questions for contractors (optional)</span>
         <p className="mt-0.5 text-xs text-muted-foreground">Every contractor must answer these when they bid.</p>
