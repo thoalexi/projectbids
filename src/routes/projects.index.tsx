@@ -14,7 +14,12 @@ const searchSchema = z.object({
   stage: fallback(z.string(), "All").default("All"),
   area: fallback(z.string(), "All").default("All"),
   due: fallback(z.string(), "Any date").default("Any date"),
+  poster: fallback(z.string(), "Anyone").default("Anyone"),
+  access: fallback(z.string(), "All jobs").default("All jobs"),
 });
+
+const POSTER_OPTIONS = ["Anyone", "Verified Homeowners"];
+const ACCESS_OPTIONS = ["All jobs", "Open to all", "Verified Pros only"];
 
 const STAGES = ["Ready to hire", "Planning & budgeting", "Just comparing prices"];
 const DUE_OPTIONS = ["Any date", "This week", "Next 30 days", "Later"];
@@ -65,14 +70,18 @@ function Browse() {
   const stage = ["All", ...STAGES].includes(search.stage) ? search.stage : "All";
   const area = ["All", ...AREAS].includes(search.area) ? search.area : "All";
   const due = DUE_OPTIONS.includes(search.due) ? search.due : "Any date";
-  const active = category !== "All" || stage !== "All" || area !== "All" || due !== "Any date";
+  const poster = POSTER_OPTIONS.includes(search.poster) ? search.poster : "Anyone";
+  const access = ACCESS_OPTIONS.includes(search.access) ? search.access : "All jobs";
+  const active = category !== "All" || stage !== "All" || area !== "All" || due !== "Any date" || poster !== "Anyone" || access !== "All jobs";
   const list = (data ?? []).filter((project) => {
     const answers = toAnswers(project.answers);
     return project.owner_id !== user?.id
       && (category === "All" || project.category === category)
       && (stage === "All" || answers["stage"] === stage)
       && (area === "All" || project.location === area)
-      && matchesDueDate(project.desired_date, due);
+      && matchesDueDate(project.desired_date, due)
+      && (poster === "Anyone" || project.owner_verified)
+      && (access === "All jobs" || (access === "Verified Pros only") === (project.contractor_requirement === "verified_only"));
   });
 
   const update = (key: keyof typeof search, value: string) =>
@@ -92,7 +101,7 @@ function Browse() {
       </div>
 
       <div className="mt-6 border-y border-border py-5">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <label className="block">
             <span className="text-xs font-medium text-muted-foreground">Category</span>
             <select value={category} onChange={(event) => update("category", event.target.value)} className="field mt-1.5">
@@ -117,6 +126,18 @@ function Browse() {
               {DUE_OPTIONS.map((option) => <option key={option}>{option}</option>)}
             </select>
           </label>
+          <label className="block">
+            <span className="text-xs font-medium text-muted-foreground">Posted by</span>
+            <select value={poster} onChange={(event) => update("poster", event.target.value)} className="field mt-1.5">
+              {POSTER_OPTIONS.map((option) => <option key={option}>{option}</option>)}
+            </select>
+          </label>
+          <label className="block">
+            <span className="text-xs font-medium text-muted-foreground">Who can bid</span>
+            <select value={access} onChange={(event) => update("access", event.target.value)} className="field mt-1.5">
+              {ACCESS_OPTIONS.map((option) => <option key={option}>{option}</option>)}
+            </select>
+          </label>
         </div>
         <div className="mt-3 flex min-h-8 items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">{isLoading ? "Loading jobs…" : `${list.length} ${list.length === 1 ? "job" : "jobs"} found`}</p>
@@ -125,7 +146,7 @@ function Browse() {
               type="button"
               variant="ghost"
               size="sm"
-              onClick={() => navigate({ search: { category: "All", stage: "All", area: "All", due: "Any date" } })}
+              onClick={() => navigate({ search: { category: "All", stage: "All", area: "All", due: "Any date", poster: "Anyone", access: "All jobs" } })}
             >
               <RotateCcw className="size-3.5" /> Clear filters
             </Button>
@@ -141,7 +162,7 @@ function Browse() {
         <div className="mt-10 text-center">
           <p className="font-semibold">No jobs match these filters.</p>
           <p className="mt-1 text-sm text-muted-foreground">Try a different location, hiring stage, or completion date.</p>
-          {active && <Button type="button" variant="secondary" className="mt-4" onClick={() => navigate({ search: { category: "All", stage: "All", area: "All", due: "Any date" } })}>Clear filters</Button>}
+          {active && <Button type="button" variant="secondary" className="mt-4" onClick={() => navigate({ search: { category: "All", stage: "All", area: "All", due: "Any date", poster: "Anyone", access: "All jobs" } })}>Clear filters</Button>}
         </div>
       )}
     </main>

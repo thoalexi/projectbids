@@ -18,3 +18,4 @@
 - Bids snapshot `contractor_name`/`trade` so seeded demo bids work without auth users.
 - Visual tokens live in src/styles.css (`frosted`, `field`, `font-display` utilities); components use semantic tokens only.
 - Contractor success fees use authenticated server functions and a signature-verified payment webhook; project awards require a paid bid record so clients cannot bypass payment.
+- Contractor verification lives in `contractor_verifications` (writes only via server functions in src/lib/verification.functions.ts; admins via `has_role`); verified-only bidding is enforced in the `enforce_bid_limit` trigger so the UI can't be bypassed.

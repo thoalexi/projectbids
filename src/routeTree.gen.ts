@@ -15,6 +15,8 @@ import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as MyBidsRouteImport } from './routes/my-bids'
 import { Route as MyPostsRouteImport } from './routes/my-posts'
 import { Route as PostRouteImport } from './routes/post'
+import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as AdminVerificationsRouteImport } from './routes/admin.verifications'
 import { Route as EditIdRouteImport } from './routes/edit.$id'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
@@ -50,6 +52,16 @@ const PostRoute = PostRouteImport.update({
   path: '/post',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminVerificationsRoute = AdminVerificationsRouteImport.update({
+  id: '/admin/verifications',
+  path: '/admin/verifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EditIdRoute = EditIdRouteImport.update({
   id: '/edit/$id',
   path: '/edit/$id',
@@ -79,6 +91,8 @@ export interface FileRoutesByFullPath {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/verify': typeof VerifyRoute
+  '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -91,6 +105,8 @@ export interface FileRoutesByTo {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/verify': typeof VerifyRoute
+  '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects': typeof ProjectsIndexRoute
@@ -104,6 +120,8 @@ export interface FileRoutesById {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/verify': typeof VerifyRoute
+  '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -118,6 +136,8 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/verify'
+    | '/admin/verifications'
     | '/edit/$id'
     | '/projects/$id'
     | '/projects/'
@@ -130,6 +150,8 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/verify'
+    | '/admin/verifications'
     | '/edit/$id'
     | '/projects/$id'
     | '/projects'
@@ -142,6 +164,8 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/verify'
+    | '/admin/verifications'
     | '/edit/$id'
     | '/projects/$id'
     | '/projects/'
@@ -155,6 +179,8 @@ export interface RootRouteChildren {
   MyBidsRoute: typeof MyBidsRoute
   MyPostsRoute: typeof MyPostsRoute
   PostRoute: typeof PostRoute
+  VerifyRoute: typeof VerifyRoute
+  AdminVerificationsRoute: typeof AdminVerificationsRoute
   EditIdRoute: typeof EditIdRoute
   ProjectsIdRoute: typeof ProjectsIdRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
@@ -205,6 +231,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/verifications': {
+      id: '/admin/verifications'
+      path: '/admin/verifications'
+      fullPath: '/admin/verifications'
+      preLoaderRoute: typeof AdminVerificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/edit/$id': {
       id: '/edit/$id'
       path: '/edit/$id'
@@ -243,6 +283,8 @@ const rootRouteChildren: RootRouteChildren = {
   MyBidsRoute: MyBidsRoute,
   MyPostsRoute: MyPostsRoute,
   PostRoute: PostRoute,
+  VerifyRoute: VerifyRoute,
+  AdminVerificationsRoute: AdminVerificationsRoute,
   EditIdRoute: EditIdRoute,
   ProjectsIdRoute: ProjectsIdRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,

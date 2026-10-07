@@ -68,7 +68,7 @@ function EditProject() {
       <p className="mt-2 text-muted-foreground">You can make changes until the first bid arrives.</p>
       <ProjectForm
         userId={user.id}
-        initial={{ ...project, answers: toAnswers(project.answers), budget_min: project.budget_min, budget_max: project.budget_max, owner_questions: toOwnerQuestions(project.owner_questions), ai_questions: toAiQuestions(project.ai_questions) }}
+        initial={{ ...project, answers: toAnswers(project.answers), budget_min: project.budget_min, budget_max: project.budget_max, owner_questions: toOwnerQuestions(project.owner_questions), ai_questions: toAiQuestions(project.ai_questions), contractor_requirement: project.contractor_requirement === "verified_only" ? "verified_only" : "all" }}
         initialPreview={preview ?? null}
         submitLabel="Save changes"
         busyLabel="Saving…"
