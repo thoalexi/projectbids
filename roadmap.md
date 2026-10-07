@@ -5,3 +5,4 @@
 - [ ] Finish contractor card setup, success-fee checkout, and payment status handling.
 - [x] Add the existing Beam Bids success-fee product to built-in payments.
 - [x] Confirm purchase behavior and that subscriptions are not part of the product.
+- [ ] Verify the jobs page and payment flow still work in the preview.
