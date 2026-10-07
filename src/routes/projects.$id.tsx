@@ -1,12 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, ImagePlus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ProjectImage } from "@/components/ProjectImage";
 import { formatBudget, formatDate, formatMoney, MAX_BIDS, projectQuery } from "@/lib/projects";
 import { BidComparison, FollowUpStep, toAiQuestions } from "@/components/ProjectAi";
@@ -25,7 +27,12 @@ export const Route = createFileRoute("/projects/$id")({
   component: ProjectDetail,
 });
 
+const MAX_PHOTOS = 6;
 const optMoney = z.preprocess((v) => (v === "" ? null : v), z.coerce.number().min(0).max(1_000_000).nullable());
+const optUrl = z.preprocess(
+  (v) => (typeof v === "string" && v.trim() === "" ? null : v),
+  z.string().trim().max(300).url("Enter full links starting with https://").refine((u) => /^https?:\/\//i.test(u), "Links must start with https://").nullable(),
+);
 const bidSchema = z.object({
   amount: z.coerce.number().positive("Enter a total above $0").max(1_000_000, "That's too high"),
   materials: optMoney,
@@ -35,7 +42,19 @@ const bidSchema = z.object({
   earliest_start: z.string().nullable(),
   warranty: z.string().trim().max(40),
   message: z.string().trim().min(1, "Add a short note").max(1000, "Keep it under 1000 characters"),
+  insured: z.boolean(),
+  website: optUrl,
+  google_url: optUrl,
+  yelp_url: optUrl,
+  thumbtack_url: optUrl,
 });
+
+function safeUrl(u: string | null | undefined) {
+  return !!u && /^https?:\/\//i.test(u);
+}
+function toPhotos(v: unknown): string[] {
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string") : [];
+}
 
 function initials(name: string) {
   return name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
@@ -49,8 +68,38 @@ function ProjectDetail() {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
   const [extra, setExtra] = useState({ materials: "", labor: "", disposal: "", duration_days: "", earliest_start: "", warranty: "" });
+  const [creds, setCreds] = useState({ insured: false, website: "", google_url: "", yelp_url: "", thumbtack_url: "" });
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [lightbox, setLightbox] = useState<string | null>(null);
   const [trade, setTrade] = useState("");
   const [busy, setBusy] = useState(false);
+
+  // Prefill credentials from the contractor's most recent bid.
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("bids")
+      .select("insured, website, google_url, yelp_url, thumbtack_url")
+      .eq("contractor_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data)
+          setCreds({
+            insured: data.insured,
+            website: data.website ?? "",
+            google_url: data.google_url ?? "",
+            yelp_url: data.yelp_url ?? "",
+            thumbtack_url: data.thumbtack_url ?? "",
+          });
+      });
+  }, [user]);
+
+  const parts = [extra.materials, extra.labor, extra.disposal].filter((v) => v.trim() !== "");
+  const hasBreakdown = parts.length > 0;
+  const breakdownSum = Math.round(parts.reduce((s, v) => s + (Number(v) || 0), 0) * 100) / 100;
 
   if (isLoading) return <main className="mx-auto max-w-6xl px-6 py-16 text-muted-foreground">Loading…</main>;
   if (!project)
@@ -82,10 +131,29 @@ function ProjectDetail() {
     refresh();
   }
 
+  async function uploadPhotos(files: FileList | null) {
+    if (!files || !user) return;
+    const list = Array.from(files).slice(0, MAX_PHOTOS - photos.length);
+    setUploading(true);
+    const added: string[] = [];
+    for (const file of list) {
+      if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) {
+        toast.error("Photos must be images under 10 MB.");
+        continue;
+      }
+      const path = `${user.id}/portfolio/${crypto.randomUUID()}.${file.name.split(".").pop() || "jpg"}`;
+      const { error } = await supabase.storage.from("project-photos").upload(path, file, { contentType: file.type });
+      if (error) toast.error("Couldn't upload a photo.");
+      else added.push(`storage:${path}`);
+    }
+    setPhotos((p) => [...p, ...added].slice(0, MAX_PHOTOS));
+    setUploading(false);
+  }
+
   async function submitBid(e: React.FormEvent) {
     e.preventDefault();
     if (!user) return;
-    const parsed = bidSchema.safeParse({ amount, message, ...extra, earliest_start: extra.earliest_start || null });
+    const parsed = bidSchema.safeParse({ amount: hasBreakdown ? breakdownSum : amount, message, ...extra, ...creds, earliest_start: extra.earliest_start || null });
     if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message);
     setBusy(true);
     const { error } = await supabase.from("bids").insert({
@@ -101,6 +169,12 @@ function ProjectDetail() {
       duration_days: parsed.data.duration_days,
       earliest_start: parsed.data.earliest_start,
       warranty: parsed.data.warranty || null,
+      insured: parsed.data.insured,
+      website: parsed.data.website,
+      google_url: parsed.data.google_url,
+      yelp_url: parsed.data.yelp_url,
+      thumbtack_url: parsed.data.thumbtack_url,
+      portfolio_images: photos,
     });
     setBusy(false);
     if (error) return void toast.error(error.message.includes("full") ? "Sorry — this project already has 5 bids." : "Couldn't send your bid. Try again.");
@@ -108,6 +182,7 @@ function ProjectDetail() {
     setAmount("");
     setMessage("");
     setExtra({ materials: "", labor: "", disposal: "", duration_days: "", earliest_start: "", warranty: "" });
+    setPhotos([]);
     refresh();
   }
 
@@ -195,18 +270,45 @@ function ProjectDetail() {
                       <p className="truncate text-sm font-semibold">
                         {b.contractor_name}
                         {b.trade && ` · ${b.trade}`}
+                        <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${b.insured ? "text-success ring-success" : "text-muted-foreground ring-border"}`}>
+                          {b.insured ? "Insured" : "Not insured"}
+                        </span>
                       </p>
                       <p className="text-xs text-muted-foreground">"{b.message}"</p>
                       <p className="mt-1 text-xs text-secondary-foreground">
                         {[
-                          b.materials != null && `Materials ${formatMoney(Number(b.materials))}`,
-                          b.labor != null && `Labor ${formatMoney(Number(b.labor))}`,
-                          b.disposal != null && `Disposal ${formatMoney(Number(b.disposal))}`,
+                          `Materials ${b.materials != null ? formatMoney(Number(b.materials)) : "–"}`,
+                          `Labor ${b.labor != null ? formatMoney(Number(b.labor)) : "–"}`,
+                          `Disposal ${b.disposal != null ? formatMoney(Number(b.disposal)) : "–"}`,
                           b.duration_days && `${b.duration_days} ${b.duration_days === 1 ? "day" : "days"}`,
                           b.earliest_start && `Start ${formatDate(b.earliest_start)}`,
                           b.warranty && `Warranty ${b.warranty}`,
                         ].filter(Boolean).join(" · ")}
                       </p>
+                      {(() => {
+                        const links = ([
+                          ["Website", b.website],
+                          ["Google", b.google_url],
+                          ["Yelp", b.yelp_url],
+                          ["Thumbtack", b.thumbtack_url],
+                        ] as const).filter(([, u]) => safeUrl(u));
+                        return links.length ? (
+                          <p className="mt-1 flex flex-wrap gap-3 text-xs">
+                            {links.map(([l, u]) => (
+                              <a key={l} href={u!} target="_blank" rel="noopener noreferrer" className="text-primary underline-offset-2 hover:underline">{l}</a>
+                            ))}
+                          </p>
+                        ) : null;
+                      })()}
+                      {toPhotos(b.portfolio_images).length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {toPhotos(b.portfolio_images).map((p) => (
+                            <button key={p} type="button" onClick={() => setLightbox(p)} aria-label="View past work photo">
+                              <ProjectImage url={p} alt="Past work" className="size-14" />
+                            </button>
+                          ))}
+                        </div>
+                      )}
                       <p className="mt-0.5 text-[11px] text-muted-foreground">Final quote subject to site inspection.</p>
                     </div>
                   </div>
@@ -278,26 +380,65 @@ function ProjectDetail() {
               <h2 className="text-lg font-semibold">Place a bid</h2>
               <p className="mt-1 text-sm text-muted-foreground">Add your price and a short note to the homeowner.</p>
               <div className="mt-5 space-y-4">
+                <div className="grid grid-cols-3 gap-2">
+                  {(["materials", "labor", "disposal"] as const).map((k) => (
+                    <label key={k} className="block">
+                      <span className="text-xs font-medium text-muted-foreground"><span className="capitalize">{k}</span> (optional)</span>
+                      <input inputMode="decimal" value={extra[k]} onChange={(e) => setExtra({ ...extra, [k]: e.target.value })} placeholder="$" className="field mt-1.5" />
+                    </label>
+                  ))}
+                </div>
                 <label className="block">
-                  <span className="text-xs font-medium text-muted-foreground">Estimated total</span>
+                  <span className="text-xs font-medium text-muted-foreground">
+                    Estimated total{hasBreakdown && " · calculated from breakdown"}
+                  </span>
                   <div className="field mt-1.5 flex items-center gap-1 py-0">
                     <span className="text-muted-foreground">$</span>
                     <input
                       inputMode="decimal"
-                      value={amount}
+                      value={hasBreakdown ? String(breakdownSum) : amount}
+                      readOnly={hasBreakdown}
                       onChange={(e) => setAmount(e.target.value)}
                       placeholder="150"
                       className="w-full bg-transparent py-2.5 outline-none"
                     />
                   </div>
                 </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["materials", "labor", "disposal"] as const).map((k) => (
-                    <label key={k} className="block">
-                      <span className="text-xs font-medium capitalize text-muted-foreground">{k}</span>
-                      <input inputMode="decimal" value={extra[k]} onChange={(e) => setExtra({ ...extra, [k]: e.target.value })} placeholder="$" className="field mt-1.5" />
-                    </label>
-                  ))}
+                <label className="flex items-center justify-between gap-3 rounded-lg bg-card/60 px-3 py-2.5 ring-1 ring-border">
+                  <span className="text-sm">I'm licensed & insured</span>
+                  <Switch checked={creds.insured} onCheckedChange={(v) => setCreds({ ...creds, insured: v })} />
+                </label>
+                {(
+                  [
+                    ["website", "Business website (optional)", "https://yourbusiness.com"],
+                    ["google_url", "Google reviews link (optional)", "https://g.page/…"],
+                    ["yelp_url", "Yelp link (optional)", "https://yelp.com/biz/…"],
+                    ["thumbtack_url", "Thumbtack link (optional)", "https://thumbtack.com/…"],
+                  ] as const
+                ).map(([k, label, ph]) => (
+                  <label key={k} className="block">
+                    <span className="text-xs font-medium text-muted-foreground">{label}</span>
+                    <input type="url" value={creds[k]} maxLength={300} onChange={(e) => setCreds({ ...creds, [k]: e.target.value })} placeholder={ph} className="field mt-1.5" />
+                  </label>
+                ))}
+                <div>
+                  <span className="text-xs font-medium text-muted-foreground">Photos of similar past jobs (optional, up to {MAX_PHOTOS})</span>
+                  <div className="mt-1.5 flex flex-wrap gap-2">
+                    {photos.map((p) => (
+                      <div key={p} className="relative">
+                        <ProjectImage url={p} alt="Past work" className="size-16" />
+                        <button type="button" aria-label="Remove photo" onClick={() => setPhotos(photos.filter((x) => x !== p))} className="absolute -right-1.5 -top-1.5 grid size-5 place-items-center rounded-full bg-background ring-1 ring-border">
+                          <X className="size-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {photos.length < MAX_PHOTOS && (
+                      <label className="grid size-16 cursor-pointer place-items-center rounded-xl bg-card/60 text-muted-foreground ring-1 ring-border">
+                        {uploading ? <span className="text-[10px]">…</span> : <ImagePlus className="size-5" />}
+                        <input type="file" accept="image/*" multiple className="hidden" disabled={uploading} onChange={(e) => uploadPhotos(e.target.files)} />
+                      </label>
+                    )}
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <label className="block">
