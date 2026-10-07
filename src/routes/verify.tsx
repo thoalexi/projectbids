@@ -234,7 +234,7 @@ function VerifyPage() {
               )}
             </div>
           </div>
-          <Button type="submit" disabled={busy || uploading} className="w-full">
+          <Button type="submit" disabled={busy || uploading || uploadingInsurance} className="w-full">
             {busy && <LoaderCircle className="size-4 animate-spin" />}
             {status === "rejected" && application?.stripe_payment_intent_id ? "Resubmit for review" : "Continue to $5 payment"}
           </Button>

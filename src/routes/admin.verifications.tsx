@@ -79,6 +79,7 @@ function AdminPage() {
       <div className="mt-6 space-y-4">
         {rows.map((a) => {
           const photos = Array.isArray(a.portfolio_images) ? (a.portfolio_images as string[]) : [];
+          const insuranceImages = Array.isArray(a.insurance_images) ? (a.insurance_images as string[]) : [];
           const links = [["Google", a.google_url], ["Yelp", a.yelp_url], ["Thumbtack", a.thumbtack_url], ["Website", a.website]].filter(([, u]) => u && /^https:\/\//i.test(u));
           return (
             <div key={a.id} className="frosted rounded-2xl p-5">
@@ -95,6 +96,15 @@ function AdminPage() {
               <div className="mt-3 grid grid-cols-5 gap-2">
                 {photos.map((p) => <ProjectImage key={p} url={p} alt="Past work" className="aspect-square w-full" />)}
               </div>
+              {a.insured && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-muted-foreground">Proof of insurance / license</p>
+                  <div className="mt-1 grid grid-cols-5 gap-2">
+                    {insuranceImages.map((p) => <ProjectImage key={p} url={p} alt="Insurance proof" className="aspect-square w-full" />)}
+                    {insuranceImages.length === 0 && <p className="col-span-5 text-xs text-destructive">No proof uploaded</p>}
+                  </div>
+                </div>
+              )}
               <input value={notes[a.id] ?? a.admin_note ?? ""} onChange={(e) => setNotes({ ...notes, [a.id]: e.target.value })} maxLength={500} placeholder="Note to the contractor (shown if sent back)" className="field mt-3" />
               <div className="mt-3 flex gap-2">
                 <Button onClick={() => decide(a.id, "approved")} disabled={a.status === "approved"}>Approve & grant badge</Button>
