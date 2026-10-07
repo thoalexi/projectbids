@@ -157,6 +157,19 @@ function ProjectDetail() {
       </main>
     );
 
+  if (!user)
+    return (
+      <main className="mx-auto max-w-xl px-6 py-20 text-center">
+        <h1 className="font-display text-3xl">Sign in to view this job</h1>
+        <p className="mt-3 text-muted-foreground">
+          Job details are only visible to signed-in members. Sign in or create a free account to see the full project and place a bid.
+        </p>
+        <Button asChild className="mt-6">
+          <Link to="/auth" search={{ redirect: `/projects/${id}` }}>Sign in</Link>
+        </Button>
+      </main>
+    );
+
   const bids = [...(project.bids ?? [])].sort((a, b) => Number(a.amount) - Number(b.amount));
   const isOwner = user?.id === project.owner_id;
   const myBid = bids.find((b) => b.contractor_id === user?.id);
