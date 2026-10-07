@@ -11,7 +11,9 @@
 
 # Project rules
 
-- Data access uses the browser Lovable Cloud client with RLS (projects, bids, profiles are publicly readable; writes scoped to auth.uid()) — keeps the marketplace simple without server functions.
+- Data access uses the browser Lovable Cloud client with RLS; only AI features run in authenticated server functions (src/lib/ai.functions.ts) — keeps the AI key server-side.
+- Bids are sealed by RLS (only the bidder and project owner can read them); public counts come from the security-definer `bid_count(projects)` computed column, and a trigger enforces the max-bids cap.
+- New projects start as `draft` (owner-only) and go `open` after the AI follow-up step.
 - Project photos live in the private `project-photos` bucket; `projects.image_url` stores `storage:<path>` for uploads (resolved via signed URLs) or a plain URL for seeded images — public buckets are blocked by workspace policy.
 - Bids snapshot `contractor_name`/`trade` so seeded demo bids work without auth users.
 - Visual tokens live in src/styles.css (`frosted`, `field`, `font-display` utilities); components use semantic tokens only.
