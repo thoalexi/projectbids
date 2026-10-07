@@ -2,10 +2,15 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { amIAdmin } from "@/lib/verification.functions";
 
 export function SiteHeader() {
   const { user, displayName } = useAuth();
   const navigate = useNavigate();
+  const checkAdmin = useServerFn(amIAdmin);
+  const { data: isAdmin } = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
   return (
     <header className="sticky top-0 z-30">
       <div className="frosted border-b border-border">
@@ -24,6 +29,8 @@ export function SiteHeader() {
               <>
                 <Link to="/my-posts" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Posts</Link>
                 <Link to="/my-bids" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Bids</Link>
+                <Link to="/verify" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Get verified</Link>
+                {isAdmin && <Link to="/admin/verifications" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Review</Link>}
               </>
             )}
             <Link to="/how-it-works" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
@@ -57,6 +64,7 @@ export function SiteHeader() {
             <Link to="/projects" activeProps={{ className: "text-foreground" }}>Browse</Link>
             <Link to="/my-posts" activeProps={{ className: "text-foreground" }}>My Posts</Link>
             <Link to="/my-bids" activeProps={{ className: "text-foreground" }}>My Bids</Link>
+            <Link to="/verify" activeProps={{ className: "text-foreground" }}>Verify</Link>
           </nav>
         )}
       </div>
