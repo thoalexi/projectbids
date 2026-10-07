@@ -57,8 +57,8 @@ function PostProject() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const parsed = schema.safeParse(form);
-    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
-    if (file && file.size > 10 * 1024 * 1024) return toast.error("Photo must be under 10 MB");
+    if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message);
+    if (file && file.size > 10 * 1024 * 1024) return void toast.error("Photo must be under 10 MB");
     setBusy(true);
     let image_url: string | null = null;
     if (file) {
@@ -67,7 +67,7 @@ function PostProject() {
       const { error } = await supabase.storage.from("project-photos").upload(path, file, { contentType: file.type });
       if (error) {
         setBusy(false);
-        return toast.error("Photo upload failed. Try a different image.");
+        return void toast.error("Photo upload failed. Try a different image.");
       }
       image_url = `storage:${path}`;
     }
@@ -77,7 +77,7 @@ function PostProject() {
       .select("id")
       .single();
     setBusy(false);
-    if (error || !data) return toast.error("Couldn't post your project. Try again.");
+    if (error || !data) return void toast.error("Couldn't post your project. Try again.");
     qc.invalidateQueries({ queryKey: ["projects"] });
     toast.success("Your project is live! Bids will show up here.");
     navigate({ to: "/projects/$id", params: { id: data.id } });

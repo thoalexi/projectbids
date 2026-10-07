@@ -62,7 +62,7 @@ function ProjectDetail() {
 
   async function accept(bidId: string) {
     const { error } = await supabase.from("projects").update({ status: "awarded", accepted_bid_id: bidId }).eq("id", id);
-    if (error) return toast.error("Couldn't accept that bid. Try again.");
+    if (error) return void toast.error("Couldn't accept that bid. Try again.");
     toast.success("Bid accepted! The contractor has the job.");
     refresh();
   }
@@ -71,7 +71,7 @@ function ProjectDetail() {
     e.preventDefault();
     if (!user) return;
     const parsed = bidSchema.safeParse({ amount, message });
-    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    if (!parsed.success) return void toast.error(parsed.error.issues[0]?.message);
     setBusy(true);
     const { error } = await supabase.from("bids").insert({
       project_id: id,
@@ -82,7 +82,7 @@ function ProjectDetail() {
       message: parsed.data.message,
     });
     setBusy(false);
-    if (error) return toast.error("Couldn't send your bid. Try again.");
+    if (error) return void toast.error("Couldn't send your bid. Try again.");
     toast.success("Your bid was sent to the homeowner.");
     setAmount("");
     setMessage("");
@@ -91,7 +91,7 @@ function ProjectDetail() {
 
   async function withdraw(bidId: string) {
     const { error } = await supabase.from("bids").delete().eq("id", bidId);
-    if (error) return toast.error("Couldn't withdraw your bid.");
+    if (error) return void toast.error("Couldn't withdraw your bid.");
     refresh();
   }
 
