@@ -154,9 +154,21 @@ function Browse() {
         </div>
       </div>
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {list.map((p) => (
-          <ProjectCard key={p.id} project={p} />
-        ))}
+        {list.map((p) =>
+          user ? (
+            <ProjectCard key={p.id} project={p} />
+          ) : (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => navigate({ to: "/auth", search: { redirect: `/projects/${p.id}` } })}
+              className="text-left"
+              aria-label={`Sign in to view ${p.title}`}
+            >
+              <ProjectCard project={p} />
+            </button>
+          )
+        )}
       </div>
       {!isLoading && list.length === 0 && (
         <div className="mt-10 text-center">
