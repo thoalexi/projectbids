@@ -1,10 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, RotateCcw } from "lucide-react";
+import { useState } from "react";
+import { CheckCircle2, ChevronDown, RotateCcw } from "lucide-react";
 import { z } from "zod";
 import { ProjectCard } from "@/components/ProjectCard";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AREAS, CATEGORIES, projectsQuery } from "@/lib/projects";
 import { toAnswers } from "@/lib/questions";
 import { useAuth } from "@/lib/auth";
@@ -12,7 +15,7 @@ import { useAuth } from "@/lib/auth";
 const searchSchema = z.object({
   category: fallback(z.string(), "All").default("All"),
   stage: fallback(z.string(), "All").default("All"),
-  area: fallback(z.string(), "All").default("All"),
+  area: fallback(z.string(), "").default(""),
   due: fallback(z.string(), "Any date").default("Any date"),
   poster: fallback(z.string(), "Anyone").default("Anyone"),
   access: fallback(z.string(), "All jobs").default("All jobs"),
