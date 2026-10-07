@@ -67,7 +67,7 @@ function Browse() {
   const list = (data ?? []).filter((project) => {
     const answers = toAnswers(project.answers);
     return (category === "All" || project.category === category)
-      && (stage === "All" || answers.stage === stage)
+      && (stage === "All" || answers["stage"] === stage)
       && (area === "All" || project.location === area)
       && matchesDueDate(project.desired_date, due);
   });
