@@ -10,6 +10,7 @@ import { projectQuery, resolveImage } from "@/lib/projects";
 import { toAnswers, toOwnerQuestions } from "@/lib/questions";
 
 export const Route = createFileRoute("/edit/$id")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Edit your project — ProjectBids" },

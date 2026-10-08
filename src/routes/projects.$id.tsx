@@ -22,9 +22,10 @@ import { useMyVerification } from "@/lib/verification";
 import { HireContactCard } from "@/components/HireContactCard";
 
 export const Route = createFileRoute("/projects/$id")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
-      { title: "Project details & bids — Beam Bids" },
+      { title: "Project details & bids — ProjectBids" },
       { name: "description", content: "See the project details and compare contractor bids." },
       { property: "og:title", content: "Project details & bids — Beam Bids" },
       { property: "og:description", content: "See the project details and compare contractor bids." },

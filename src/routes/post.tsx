@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ProjectForm } from "@/components/ProjectForm";
 
 export const Route = createFileRoute("/post")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Post a home project — ProjectBids" },

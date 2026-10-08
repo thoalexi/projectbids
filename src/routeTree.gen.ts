@@ -15,6 +15,7 @@ import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as MyBidsRouteImport } from './routes/my-bids'
 import { Route as MyPostsRouteImport } from './routes/my-posts'
 import { Route as PostRouteImport } from './routes/post'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AdminVerificationsRouteImport } from './routes/admin.verifications'
 import { Route as EditIdRouteImport } from './routes/edit.$id'
@@ -50,6 +51,11 @@ const MyPostsRoute = MyPostsRouteImport.update({
 const PostRoute = PostRouteImport.update({
   id: '/post',
   path: '/post',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyRoute = VerifyRouteImport.update({
@@ -91,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
   '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
@@ -105,6 +112,7 @@ export interface FileRoutesByTo {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
   '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
@@ -120,6 +128,7 @@ export interface FileRoutesById {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
   '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/sitemap.xml'
     | '/verify'
     | '/admin/verifications'
     | '/edit/$id'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/sitemap.xml'
     | '/verify'
     | '/admin/verifications'
     | '/edit/$id'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/sitemap.xml'
     | '/verify'
     | '/admin/verifications'
     | '/edit/$id'
@@ -179,6 +191,7 @@ export interface RootRouteChildren {
   MyBidsRoute: typeof MyBidsRoute
   MyPostsRoute: typeof MyPostsRoute
   PostRoute: typeof PostRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerifyRoute: typeof VerifyRoute
   AdminVerificationsRoute: typeof AdminVerificationsRoute
   EditIdRoute: typeof EditIdRoute
@@ -229,6 +242,13 @@ declare module '@tanstack/react-router' {
       path: '/post'
       fullPath: '/post'
       preLoaderRoute: typeof PostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify': {
@@ -283,6 +303,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyBidsRoute: MyBidsRoute,
   MyPostsRoute: MyPostsRoute,
   PostRoute: PostRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerifyRoute: VerifyRoute,
   AdminVerificationsRoute: AdminVerificationsRoute,
   EditIdRoute: EditIdRoute,

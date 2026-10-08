@@ -10,6 +10,7 @@ import { ProofFile } from "@/components/ProofFile";
 import { amIAdmin, claimOwnerAdmin, listVerificationApplications, reviewVerificationApplication } from "@/lib/verification.functions";
 
 export const Route = createFileRoute("/admin/verifications")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Review Verified Pro applications — ProjectBids" },

@@ -16,6 +16,7 @@ import { useMyVerification } from "@/lib/verification";
 import { confirmVerificationPayment, startVerificationApplication } from "@/lib/verification.functions";
 
 export const Route = createFileRoute("/verify")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Become a Verified Pro — ProjectBids" },

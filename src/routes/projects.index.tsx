@@ -28,6 +28,7 @@ const STAGES = ["Ready to hire", "Planning & budgeting", "Just comparing prices"
 const DUE_OPTIONS = ["Any date", "This week", "Next 30 days", "Later"];
 
 export const Route = createFileRoute("/projects/")({
+  staticData: { sitemap: true },
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
