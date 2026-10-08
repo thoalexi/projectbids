@@ -44,11 +44,11 @@ export function HireContactCard({
     if (mine) setForm({ name: mine.name, phone: mine.phone, email: mine.email, address: mine.address, notes: mine.notes });
   }, [mine?.user_id, mine?.phone, mine?.address]);
 
-  async function save(e: React.FormEvent) {
+  async function save(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     const phone = form.phone.trim();
-    if (phone.replace(/\D/g, "").length < 10) return toast.error("Enter a phone number with area code");
-    if (isOwner && form.address.trim().length < 5) return toast.error("Enter the job's street address");
+    if (phone.replace(/\D/g, "").length < 10) { toast.error("Enter a phone number with area code"); return; }
+    if (isOwner && form.address.trim().length < 5) { toast.error("Enter the job's street address"); return; }
     setSaving(true);
     const { error } = await supabase.from("hire_contacts").upsert(
       {
