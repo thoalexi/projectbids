@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { formatDate, formatMoney } from "@/lib/projects";
 
 export const Route = createFileRoute("/my-posts")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "My Posts — ProjectBids" },

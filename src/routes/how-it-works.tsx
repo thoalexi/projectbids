@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/how-it-works")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "How bidding works — ProjectBids" },

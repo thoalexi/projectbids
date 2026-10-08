@@ -6,6 +6,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { projectsQuery } from "@/lib/projects";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "ProjectBids — Post the job, get honest bids" },

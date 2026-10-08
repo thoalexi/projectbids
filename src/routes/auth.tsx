@@ -13,6 +13,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [

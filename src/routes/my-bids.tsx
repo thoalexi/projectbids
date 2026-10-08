@@ -9,6 +9,7 @@ import { getMyBidPayments } from "@/lib/payments.functions";
 import { formatFee } from "@/lib/fees";
 
 export const Route = createFileRoute("/my-bids")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "My Bids — ProjectBids" },
