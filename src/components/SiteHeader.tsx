@@ -71,17 +71,25 @@ export function SiteHeader() {
             </Link>
           </Button>
         </div>
-        {user && (
-          <nav className="flex justify-center gap-6 border-t border-border py-2 text-sm font-medium text-muted-foreground lg:hidden">
-            <Link to="/projects" activeProps={{ className: "text-foreground" }}>Browse</Link>
-            <Link to="/my-posts" activeProps={{ className: "text-foreground" }}>My Posts</Link>
-            <Link to="/my-bids" activeProps={{ className: "text-foreground" }}>My Bids</Link>
-            <Link to="/verify" activeProps={{ className: "text-foreground" }}>Verify</Link>
-            <Link to="/how-it-works" className="hidden sm:inline" activeProps={{ className: "text-foreground" }}>How it works</Link>
+        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-1 border-t border-border py-2 text-sm font-medium text-muted-foreground lg:hidden">
+          <Link to="/projects" activeProps={{ className: "text-foreground" }}>Browse</Link>
+          {user && (
+            <>
+              <Link to="/my-posts" activeProps={{ className: "text-foreground" }}>My Posts</Link>
+              <Link to="/my-bids" activeProps={{ className: "text-foreground" }}>My Bids</Link>
+              <Link to="/verify" activeProps={{ className: "text-foreground" }}>Verify</Link>
+            </>
+          )}
+          <button className="hover:text-foreground" onClick={() => setFbOpen(true)}>Feedback</button>
+          <Link to="/how-it-works" className="hidden sm:inline" activeProps={{ className: "text-foreground" }}>How it works</Link>
+          {user ? (
             <button className="hidden sm:inline" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
-          </nav>
-        )}
+          ) : (
+            <Link to="/auth" className="hidden sm:inline">Sign in</Link>
+          )}
+        </nav>
       </div>
+      <FeedbackDialog open={fbOpen} onOpenChange={setFbOpen} />
     </header>
   );
 }
