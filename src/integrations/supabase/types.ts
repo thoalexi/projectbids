@@ -96,6 +96,8 @@ export type Database = {
           id: string
           insured: boolean
           labor: number | null
+          license_number: string | null
+          licensed: boolean
           materials: number | null
           message: string
           portfolio_images: Json
@@ -119,6 +121,8 @@ export type Database = {
           id?: string
           insured?: boolean
           labor?: number | null
+          license_number?: string | null
+          licensed?: boolean
           materials?: number | null
           message?: string
           portfolio_images?: Json
@@ -142,6 +146,8 @@ export type Database = {
           id?: string
           insured?: boolean
           labor?: number | null
+          license_number?: string | null
+          licensed?: boolean
           materials?: number | null
           message?: string
           portfolio_images?: Json
@@ -174,6 +180,9 @@ export type Database = {
           insurance_details: string | null
           insurance_images: Json
           insured: boolean
+          license_images: Json
+          license_number: string | null
+          licensed: boolean
           portfolio_images: Json
           reviewed_at: string | null
           status: string
@@ -196,6 +205,9 @@ export type Database = {
           insurance_details?: string | null
           insurance_images?: Json
           insured?: boolean
+          license_images?: Json
+          license_number?: string | null
+          licensed?: boolean
           portfolio_images?: Json
           reviewed_at?: string | null
           status?: string
@@ -218,6 +230,9 @@ export type Database = {
           insurance_details?: string | null
           insurance_images?: Json
           insured?: boolean
+          license_images?: Json
+          license_number?: string | null
+          licensed?: boolean
           portfolio_images?: Json
           reviewed_at?: string | null
           status?: string

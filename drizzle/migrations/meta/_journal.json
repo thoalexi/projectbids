@@ -78,6 +78,13 @@
       "when": 1791403233558,
       "tag": "0010_verification_insurance_images",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791475548793,
+      "tag": "0011_split_license_insurance",
+      "breakpoints": true
     }
   ]
 }
