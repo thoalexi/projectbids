@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { amIAdmin } from "@/lib/verification.functions";
+import logo from "@/assets/logo-concept-gavel.png";
 
 export function SiteHeader() {
   const { user, displayName } = useAuth();
@@ -16,9 +17,7 @@ export function SiteHeader() {
       <div className="frosted border-b border-border">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-lg bg-primary/10 ring-1 ring-primary/15">
-              <span className="size-4 rounded-sm bg-primary/70" />
-            </span>
+            <img src={logo} alt="ProjectBids logo" className="size-8" width={32} height={32} />
             <span className="font-display text-lg tracking-tight">ProjectBids</span>
           </Link>
           <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
