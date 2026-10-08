@@ -13,7 +13,6 @@ export function SiteHeader() {
   const { user, displayName } = useAuth();
   const navigate = useNavigate();
   const [fbOpen, setFbOpen] = useState(false);
-  const navigate = useNavigate();
   const checkAdmin = useServerFn(amIAdmin);
   const { data: isAdmin } = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
   return (
