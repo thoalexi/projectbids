@@ -11,4 +11,4 @@
 - [x] Keep a typed bid through the card security check and finish submitting it
 - [x] Homeowner button reads "Hire" (and "Hiring…")
 
-- [ ] Split licensed vs insured (license number hidden from homeowners; admin-only)
+- [x] Split licensed vs insured (license number hidden from homeowners; admin-only)

@@ -87,6 +87,7 @@ function AdminPage() {
                 <div>
                   <p className="font-semibold">{a.business_name}{a.trade && ` · ${a.trade}`}</p>
                   <p className="text-xs text-muted-foreground">{a.insured ? `Insured — ${a.insurance_details || "no details"}` : "Not insured"}</p>
+                  <p className="text-xs text-muted-foreground">{a.licensed ? `Licensed — #${a.license_number || "no number"}` : "No license"}</p>
                 </div>
                 <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-border">{LABEL[a.status] ?? a.status}</span>
               </div>
@@ -98,10 +99,18 @@ function AdminPage() {
               </div>
               {a.insured && (
                 <div className="mt-3">
-                  <p className="text-xs font-medium text-muted-foreground">Proof of insurance / license</p>
+                  <p className="text-xs font-medium text-muted-foreground">Certificate of insurance</p>
                   <div className="mt-1 grid grid-cols-5 gap-2">
                     {insuranceImages.map((p) => <ProjectImage key={p} url={p} alt="Insurance proof" className="aspect-square w-full" />)}
                     {insuranceImages.length === 0 && <p className="col-span-5 text-xs text-destructive">No proof uploaded</p>}
+                  </div>
+                </div>
+              )}
+              {a.licensed && (
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-muted-foreground">License proof</p>
+                  <div className="mt-1 grid grid-cols-5 gap-2">
+                    {(Array.isArray(a.license_images) ? (a.license_images as string[]) : []).map((p) => <ProjectImage key={p} url={p} alt="License proof" className="aspect-square w-full" />)}
                   </div>
                 </div>
               )}
