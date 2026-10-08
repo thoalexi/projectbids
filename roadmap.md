@@ -12,3 +12,4 @@
 - [x] Homeowner button reads "Hire" (and "Hiring…")
 
 - [x] Split licensed vs insured (license number hidden from homeowners; admin-only)
+- [x] Up to 3 proof documents (image/PDF) per credential; drop insurance company/policy field

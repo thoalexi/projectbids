@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { ProjectImage } from "@/components/ProjectImage";
+import { ProofFile } from "@/components/ProofFile";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { useMyVerification } from "@/lib/verification";
 import { confirmVerificationPayment, startVerificationApplication } from "@/lib/verification.functions";
@@ -30,7 +31,7 @@ export const Route = createFileRoute("/verify")({
 
 const MAX_PHOTOS = 10;
 const MIN_PHOTOS = 3;
-const MAX_INSURANCE_IMAGES = 5;
+const MAX_PROOF_FILES = 3;
 
 function PayForm({ onPaid }: { onPaid: () => Promise<void> }) {
   const stripe = useStripe();
@@ -65,7 +66,7 @@ function PayForm({ onPaid }: { onPaid: () => Promise<void> }) {
 
 function CredentialBlock(p: {
   label: string; hint?: string; checked: boolean; onChecked: (v: boolean) => void;
-  detail: string; onDetail: (v: string) => void; detailPlaceholder: string; proofTitle: string;
+  detail?: string; onDetail?: (v: string) => void; detailPlaceholder?: string; proofTitle: string;
   images: string[]; setImages: (v: string[]) => void; uploading: boolean; onUpload: (f: FileList | null) => void;
 }) {
   return (
@@ -76,20 +77,20 @@ function CredentialBlock(p: {
       </label>
       {p.checked && (
         <div className="space-y-2">
-          <input value={p.detail} onChange={(e) => p.onDetail(e.target.value)} maxLength={300} placeholder={p.detailPlaceholder} className="field" />
+          {p.onDetail && <input value={p.detail} onChange={(e) => p.onDetail?.(e.target.value)} maxLength={300} placeholder={p.detailPlaceholder} className="field" />}
           <p className="text-sm font-medium">{p.proofTitle}</p>
-          <p className="text-xs text-muted-foreground">Required — up to {MAX_INSURANCE_IMAGES} images.</p>
+          <p className="text-xs text-muted-foreground">Required — up to {MAX_PROOF_FILES} photos or PDFs.</p>
           <div className="mt-2 grid grid-cols-5 gap-2">
             {p.images.map((img) => (
               <div key={img} className="relative">
-                <ProjectImage url={img} alt={p.proofTitle} className="aspect-square w-full" />
+                <ProofFile url={img} alt={p.proofTitle} />
                 <button type="button" aria-label="Remove image" onClick={() => p.setImages(p.images.filter((x) => x !== img))} className="absolute right-1 top-1 rounded-full bg-background/80 p-0.5"><X className="size-3" /></button>
               </div>
             ))}
-            {p.images.length < MAX_INSURANCE_IMAGES && (
+            {p.images.length < MAX_PROOF_FILES && (
               <label className="grid aspect-square cursor-pointer place-items-center rounded-lg bg-secondary text-muted-foreground ring-1 ring-border">
                 {p.uploading ? <LoaderCircle className="size-5 animate-spin" /> : <ImagePlus className="size-5" />}
-                <input type="file" accept="image/*" multiple className="hidden" disabled={p.uploading} onChange={(e) => p.onUpload(e.target.files)} />
+                <input type="file" accept="image/*,application/pdf" multiple className="hidden" disabled={p.uploading} onChange={(e) => p.onUpload(e.target.files)} />
               </label>
             )}
           </div>
@@ -144,12 +145,13 @@ function VerifyPage() {
     );
   if (isLoading) return <main className="mx-auto max-w-xl px-6 py-16 text-muted-foreground">Loading…</main>;
 
-  async function uploadTo(files: FileList | null, current: string[], max: number, add: (paths: string[]) => void, setBusyFlag: (v: boolean) => void) {
+  async function uploadTo(files: FileList | null, current: string[], max: number, add: (paths: string[]) => void, setBusyFlag: (v: boolean) => void, allowPdf = false) {
     if (!files || !user) return;
     setBusyFlag(true);
     const added: string[] = [];
     for (const file of Array.from(files).slice(0, max - current.length)) {
-      if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) { toast.error("Images must be under 10 MB."); continue; }
+      const okType = file.type.startsWith("image/") || (allowPdf && file.type === "application/pdf");
+      if (!okType || file.size > 10 * 1024 * 1024) { toast.error(allowPdf ? "Upload photos or PDFs under 10 MB." : "Images must be under 10 MB."); continue; }
       const path = `${user.id}/verification/${crypto.randomUUID()}.${file.name.split(".").pop() || "jpg"}`;
       const { error } = await supabase.storage.from("project-photos").upload(path, file, { contentType: file.type });
       if (error) toast.error("Couldn't upload an image.");
@@ -160,8 +162,8 @@ function VerifyPage() {
   }
 
   const upload = (files: FileList | null) => uploadTo(files, photos, MAX_PHOTOS, (a) => setPhotos((p) => [...p, ...a]), setUploading);
-  const uploadInsurance = (files: FileList | null) => uploadTo(files, insuranceImages, MAX_INSURANCE_IMAGES, (a) => setInsuranceImages((p) => [...p, ...a]), setUploadingInsurance);
-  const uploadLicense = (files: FileList | null) => uploadTo(files, licenseImages, MAX_INSURANCE_IMAGES, (a) => setLicenseImages((p) => [...p, ...a]), setUploadingLicense);
+  const uploadInsurance = (files: FileList | null) => uploadTo(files, insuranceImages, MAX_PROOF_FILES, (a) => setInsuranceImages((p) => [...p, ...a]), setUploadingInsurance, true);
+  const uploadLicense = (files: FileList | null) => uploadTo(files, licenseImages, MAX_PROOF_FILES, (a) => setLicenseImages((p) => [...p, ...a]), setUploadingLicense, true);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -170,9 +172,9 @@ function VerifyPage() {
     const links = [form.googleUrl, form.yelpUrl, form.thumbtackUrl, form.website].filter((l) => l.trim());
     if (links.some((l) => !/^https:\/\//i.test(l.trim()))) return void toast.error("Links must start with https://");
     if (![form.googleUrl, form.yelpUrl, form.thumbtackUrl].some((l) => l.trim())) return void toast.error("Add at least one Google, Yelp or Thumbtack review link");
-    if (form.insured && insuranceImages.length === 0) return void toast.error("Upload your certificate of insurance (up to 5 images)");
+    if (form.insured && insuranceImages.length === 0) return void toast.error("Upload your certificate of insurance (up to 3 files)");
     if (form.licensed && !form.licenseNumber.trim()) return void toast.error("Add your license number");
-    if (form.licensed && licenseImages.length === 0) return void toast.error("Upload proof of your license (up to 5 images)");
+    if (form.licensed && licenseImages.length === 0) return void toast.error("Upload proof of your license (up to 3 files)");
     setBusy(true);
     const res = await start({ data: { ...form, portfolioImages: photos, insuranceImages, licenseImages, environment: getStripeEnvironment() } });
     setBusy(false);
@@ -235,9 +237,6 @@ function VerifyPage() {
             label="I carry general liability insurance"
             checked={form.insured}
             onChecked={(v) => setForm({ ...form, insured: v })}
-            detail={form.insuranceDetails}
-            onDetail={(v) => setForm({ ...form, insuranceDetails: v })}
-            detailPlaceholder="Insurance company & policy number"
             proofTitle="Certificate of insurance"
             images={insuranceImages}
             setImages={setInsuranceImages}
