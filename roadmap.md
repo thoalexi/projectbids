@@ -14,3 +14,5 @@
 - [x] Split licensed vs insured (license number hidden from homeowners; admin-only)
 - [x] Up to 3 proof documents (image/PDF) per credential; drop insurance company/policy field
 - [x] Drop license number field
+- [x] Show the "Insured" pill only when a pro is insured (no "Not insured" pill)
+- [x] Stack the job page back to one column (bid panel under the job)
