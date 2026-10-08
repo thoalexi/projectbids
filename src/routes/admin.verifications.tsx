@@ -88,7 +88,7 @@ function AdminPage() {
                 <div>
                   <p className="font-semibold">{a.business_name}{a.trade && ` · ${a.trade}`}</p>
                   <p className="text-xs text-muted-foreground">{a.insured ? "Insured" : "Not insured"}</p>
-                  <p className="text-xs text-muted-foreground">{a.licensed ? `Licensed — #${a.license_number || "no number"}` : "No license"}</p>
+                  <p className="text-xs text-muted-foreground">{a.licensed ? "Licensed" : "No license"}</p>
                 </div>
                 <span className="rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-border">{LABEL[a.status] ?? a.status}</span>
               </div>

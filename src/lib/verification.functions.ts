@@ -45,7 +45,6 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
       const insuranceImages = (data.insuranceImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 3);
       if (data.insured && insuranceImages.length === 0) throw new Error("Upload your certificate of insurance (up to 3 files)");
       const licenseImages = (data.licenseImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 3);
-      if (data.licensed && !clean(data.licenseNumber, 60)) throw new Error("Add your license number");
       if (data.licensed && licenseImages.length === 0) throw new Error("Upload proof of your license (up to 3 files)");
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -67,7 +66,7 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
         insurance_details: null,
         insurance_images: (data.insured ? insuranceImages : []) as Json,
         licensed: !!data.licensed,
-        license_number: data.licensed ? clean(data.licenseNumber, 60) : null,
+        license_number: null,
         license_images: (data.licensed ? licenseImages : []) as Json,
         portfolio_images: images as Json,
         environment: data.environment,

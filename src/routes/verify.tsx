@@ -173,7 +173,6 @@ function VerifyPage() {
     if (links.some((l) => !/^https:\/\//i.test(l.trim()))) return void toast.error("Links must start with https://");
     if (![form.googleUrl, form.yelpUrl, form.thumbtackUrl].some((l) => l.trim())) return void toast.error("Add at least one Google, Yelp or Thumbtack review link");
     if (form.insured && insuranceImages.length === 0) return void toast.error("Upload your certificate of insurance (up to 3 files)");
-    if (form.licensed && !form.licenseNumber.trim()) return void toast.error("Add your license number");
     if (form.licensed && licenseImages.length === 0) return void toast.error("Upload proof of your license (up to 3 files)");
     setBusy(true);
     const res = await start({ data: { ...form, portfolioImages: photos, insuranceImages, licenseImages, environment: getStripeEnvironment() } });
@@ -248,9 +247,6 @@ function VerifyPage() {
             hint="Optional — many painters, landscapers and handymen don't need one."
             checked={form.licensed}
             onChecked={(v) => setForm({ ...form, licensed: v })}
-            detail={form.licenseNumber}
-            onDetail={(v) => setForm({ ...form, licenseNumber: v })}
-            detailPlaceholder="License number (only our review team sees this)"
             proofTitle="Photo of your license"
             images={licenseImages}
             setImages={setLicenseImages}
