@@ -234,6 +234,7 @@ function VerifyPage() {
           </div>
           <CredentialBlock
             label="I carry general liability insurance"
+            hint="Optional — but it helps homeowners trust you with their property."
             checked={form.insured}
             onChecked={(v) => setForm({ ...form, insured: v })}
             proofTitle="Certificate of insurance"
