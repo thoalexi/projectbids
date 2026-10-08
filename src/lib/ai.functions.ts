@@ -51,7 +51,7 @@ export const compareBids = createServerFn({ method: "POST" })
           `Total: $${b.amount}`,
           `Materials: ${b.materials ?? "not stated"}; Labor: ${b.labor ?? "not stated"}; Disposal: ${b.disposal ?? "not stated"}`,
           `Duration: ${b.duration_days ?? "?"} days; Earliest start: ${b.earliest_start ?? "?"}; Warranty: ${b.warranty || "none stated"}`,
-          `Licensed & insured: ${b.insured ? "yes" : "not stated / no"}`,
+          `Insured: ${b.insured ? "yes" : "not stated / no"}; Licensed: ${b.licensed ? "yes" : "not stated / no"}`,
           `Note: ${b.message}`,
           ...(Array.isArray(b.question_answers) ? (b.question_answers as { question?: string; answer?: string }[]).map((qa) => `Q: ${qa.question} A: ${qa.answer}`) : []),
         ].join("\n"),

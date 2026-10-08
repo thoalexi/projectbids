@@ -50,6 +50,7 @@ const bidSchema = z.object({
   warranty: z.string().trim().max(40),
   message: z.string().trim().min(1, "Add a short note").max(1000, "Keep it under 1000 characters"),
   insured: z.boolean(),
+  licensed: z.boolean(),
   website: optUrl,
   google_url: optUrl,
   yelp_url: optUrl,
@@ -78,7 +79,7 @@ function ProjectDetail() {
   const [amount, setAmount] = useState("");
   const [message, setMessage] = useState("");
   const [extra, setExtra] = useState({ materials: "", labor: "", disposal: "", duration_days: "", earliest_start: "", warranty: "" });
-  const [creds, setCreds] = useState({ insured: false, website: "", google_url: "", yelp_url: "", thumbtack_url: "" });
+  const [creds, setCreds] = useState({ insured: false, licensed: false, website: "", google_url: "", yelp_url: "", thumbtack_url: "" });
   const [photos, setPhotos] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [lightbox, setLightbox] = useState<string | null>(null);
@@ -94,7 +95,7 @@ function ProjectDetail() {
     if (!user) return;
     supabase
       .from("bids")
-      .select("insured, website, google_url, yelp_url, thumbtack_url")
+      .select("insured, licensed, website, google_url, yelp_url, thumbtack_url")
       .eq("contractor_id", user.id)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -103,6 +104,7 @@ function ProjectDetail() {
         if (data)
           setCreds({
             insured: data.insured,
+            licensed: data.licensed,
             website: data.website ?? "",
             google_url: data.google_url ?? "",
             yelp_url: data.yelp_url ?? "",
@@ -234,6 +236,7 @@ function ProjectDetail() {
       earliestStart: parsed.data.earliest_start,
       warranty: parsed.data.warranty || null,
       insured: parsed.data.insured,
+      licensed: parsed.data.licensed,
       website: parsed.data.website,
       googleUrl: parsed.data.google_url,
       yelpUrl: parsed.data.yelp_url,
@@ -365,6 +368,7 @@ function ProjectDetail() {
                         <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${b.insured ? "text-success ring-success" : "text-muted-foreground ring-border"}`}>
                           {b.insured ? "Insured" : "Not insured"}
                         </span>
+                        {b.licensed && <span className="ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold text-success ring-1 ring-success">Licensed</span>}
                       </p>
                       <p className="text-xs text-muted-foreground">"{b.message}"</p>
                       <p className="mt-1 text-xs text-secondary-foreground">
@@ -523,8 +527,12 @@ function ProjectDetail() {
                   </div>
                 </label>
                 <label className="flex items-center justify-between gap-3 rounded-lg bg-card/60 px-3 py-2.5 ring-1 ring-border">
-                  <span className="text-sm">I'm licensed & insured</span>
+                  <span className="text-sm">I carry liability insurance</span>
                   <Switch checked={creds.insured} onCheckedChange={(v) => setCreds({ ...creds, insured: v })} />
+                </label>
+                <label className="flex items-center justify-between gap-3 rounded-lg bg-card/60 px-3 py-2.5 ring-1 ring-border">
+                  <span className="text-sm">I hold a state or trade license</span>
+                  <Switch checked={creds.licensed} onCheckedChange={(v) => setCreds({ ...creds, licensed: v })} />
                 </label>
                 {(
                   [
