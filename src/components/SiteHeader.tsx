@@ -15,10 +15,10 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30">
       <div className="frosted border-b border-border">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2.5">
-            <img src={logo} alt="ProjectBids logo" className="size-8" width={32} height={32} />
-            <span className="font-display text-lg tracking-tight">ProjectBids</span>
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+          <Link to="/" className="flex min-w-0 items-center gap-2.5">
+            <img src={logo} alt="ProjectBids logo" className="size-8 shrink-0" width={32} height={32} />
+            <span className="hidden truncate font-display text-lg tracking-tight min-[420px]:inline">ProjectBids</span>
           </Link>
           <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
             <Link to="/projects" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
