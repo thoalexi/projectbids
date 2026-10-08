@@ -289,7 +289,7 @@ function ProjectDetail() {
   return (
     <main className="mx-auto max-w-6xl px-6 pb-20 pt-10">
       <Link to="/projects" className="text-sm text-muted-foreground hover:text-foreground">← All jobs</Link>
-      <div className="mt-4 grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+      <div className="mt-4 grid gap-6">
         <div className="frosted rounded-2xl p-6">
           <ProjectImage url={project.image_url} alt={project.title} className="aspect-[16/9] w-full" />
           <div className="mt-6 flex items-start justify-between gap-4">
