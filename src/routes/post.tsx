@@ -10,9 +10,9 @@ import { ProjectForm } from "@/components/ProjectForm";
 export const Route = createFileRoute("/post")({
   head: () => ({
     meta: [
-      { title: "Post a home project — Quote Slip" },
+      { title: "Post a home project — ProjectBids" },
       { name: "description", content: "Describe your project, add a photo and a date, and start receiving bids." },
-      { property: "og:title", content: "Post a home project — Quote Slip" },
+      { property: "og:title", content: "Post a home project — ProjectBids" },
       { property: "og:description", content: "Describe your project, add a photo and a date, and start receiving bids." },
     ],
   }),

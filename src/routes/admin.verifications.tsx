@@ -12,9 +12,9 @@ import { amIAdmin, claimOwnerAdmin, listVerificationApplications, reviewVerifica
 export const Route = createFileRoute("/admin/verifications")({
   head: () => ({
     meta: [
-      { title: "Review Verified Pro applications — Beam Bids" },
+      { title: "Review Verified Pro applications — ProjectBids" },
       { name: "description", content: "Admin review queue for Verified Pro applications." },
-      { property: "og:title", content: "Review Verified Pro applications — Beam Bids" },
+      { property: "og:title", content: "Review Verified Pro applications — ProjectBids" },
       { property: "og:description", content: "Admin review queue for Verified Pro applications." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -42,7 +42,7 @@ function AdminPage() {
   if (!admin.data)
     return (
       <main className="mx-auto max-w-4xl px-6 py-16">
-        <p>This page is for Beam Bids admins only.</p>
+        <p>This page is for ProjectBids admins only.</p>
         <Button
           className="mt-4"
           onClick={async () => {

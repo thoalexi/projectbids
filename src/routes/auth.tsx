@@ -16,9 +16,9 @@ export const Route = createFileRoute("/auth")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Sign in — Quote Slip" },
+      { title: "Sign in — ProjectBids" },
       { name: "description", content: "Sign in or create an account to post projects or bid on jobs." },
-      { property: "og:title", content: "Sign in — Quote Slip" },
+      { property: "og:title", content: "Sign in — ProjectBids" },
       { property: "og:description", content: "Sign in or create an account to post projects or bid on jobs." },
     ],
   }),

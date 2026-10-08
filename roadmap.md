@@ -17,5 +17,5 @@
 - [x] Show the "Insured" pill only when a pro is insured (no "Not insured" pill)
 - [x] Stack the job page back to one column (bid panel under the job)
 
-- [ ] Contact card (phone/email/address) after hire
-- [ ] Rename Beam Bids / Quote Slip to ProjectBids everywhere
+- [x] Contact card (phone/email/address) after hire
+- [x] Rename Beam Bids / Quote Slip to ProjectBids everywhere

@@ -19,6 +19,7 @@ import { acceptBidAndChargeFee, createBidCardSetup, getProjectPaymentReadiness, 
 import { formatFee, successFeeCents } from "@/lib/fees";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { useMyVerification } from "@/lib/verification";
+import { HireContactCard } from "@/components/HireContactCard";
 
 export const Route = createFileRoute("/projects/$id")({
   head: () => ({
@@ -440,6 +441,18 @@ function ProjectDetail() {
             />
           )}
         </div>
+
+        {project.status === "awarded" && user && (isOwner || bids.find((b) => b.id === project.accepted_bid_id)?.contractor_id === user.id) && (
+          <HireContactCard
+            projectId={id}
+            userId={user.id}
+            userEmail={user.email ?? ""}
+            defaultName={displayName ?? ""}
+            isOwner={isOwner}
+            otherName={isOwner ? (bids.find((b) => b.id === project.accepted_bid_id)?.contractor_name ?? "Your pro") : firstName(project.owner_name)}
+            neighborhood={project.location}
+          />
+        )}
 
         <aside className="frosted h-fit rounded-2xl p-6">
           {!isOpen ? (

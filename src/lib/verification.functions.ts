@@ -85,7 +85,7 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
         amount: VERIFICATION_FEE_CENTS,
         currency: "usd",
         payment_method_types: ["card"],
-        description: "Beam Bids Verified Pro application",
+        description: "ProjectBids Verified Pro application",
         ...(authData.user?.email ? { receipt_email: authData.user.email } : {}),
         metadata: { kind: "verification", applicationId: row.id, userId: context.userId },
       });

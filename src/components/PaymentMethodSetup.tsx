@@ -46,7 +46,7 @@ function SetupForm({ onReady }: { onReady: (setupIntentId: string) => Promise<vo
         {busy && <LoaderCircle className="size-4 animate-spin" />}
         {busy ? "Saving and submitting…" : "Save card & submit bid"}
       </Button>
-      <p className="text-center text-xs text-muted-foreground">Your card is stored securely by our payment provider. Beam Bids never sees the card number.</p>
+      <p className="text-center text-xs text-muted-foreground">Your card is stored securely by our payment provider. ProjectBids never sees the card number.</p>
     </form>
   );
 }

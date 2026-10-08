@@ -19,7 +19,7 @@ export function SiteHeader() {
             <span className="grid size-9 place-items-center rounded-lg bg-primary/10 ring-1 ring-primary/15">
               <span className="size-4 rounded-sm bg-primary/70" />
             </span>
-            <span className="font-display text-lg tracking-tight">Beam Bids</span>
+            <span className="font-display text-lg tracking-tight">ProjectBids</span>
           </Link>
           <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
             <Link to="/projects" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>

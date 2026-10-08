@@ -11,9 +11,9 @@ import { formatFee } from "@/lib/fees";
 export const Route = createFileRoute("/my-bids")({
   head: () => ({
     meta: [
-      { title: "My Bids — Beam Bids" },
+      { title: "My Bids — ProjectBids" },
       { name: "description", content: "Bids you've placed, jobs you've been hired for, and what's still pending." },
-      { property: "og:title", content: "My Bids — Beam Bids" },
+      { property: "og:title", content: "My Bids — ProjectBids" },
       { property: "og:description", content: "Bids you've placed, jobs you've been hired for, and what's still pending." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

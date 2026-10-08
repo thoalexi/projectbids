@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
     meta: [
-      { title: "How bidding works — Beam Bids" },
+      { title: "How bidding works — ProjectBids" },
       { name: "description", content: "Post a job, receive sealed bids, or bid for free and only pay when hired." },
-      { property: "og:title", content: "How bidding works — Beam Bids" },
+      { property: "og:title", content: "How bidding works — ProjectBids" },
       { property: "og:description", content: "Post a job, receive sealed bids, or bid for free and only pay when hired." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -36,7 +36,7 @@ function HowItWorks() {
       </div>
       <div className="mt-5 rounded-lg bg-success/10 p-5 ring-1 ring-success/25">
         <p className="font-semibold text-success">The end of paying for leads that never become customers.</p>
-        <p className="mt-1 text-sm text-muted-foreground">Contractors only pay Beam Bids after a homeowner hires them. Every losing bid costs $0.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Contractors only pay ProjectBids after a homeowner hires them. Every losing bid costs $0.</p>
       </div>
       <div className="mt-10 flex gap-3">
         <Button asChild><Link to="/post">Post a project</Link></Button>

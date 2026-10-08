@@ -188,7 +188,7 @@ export const acceptBidAndChargeFee = createServerFn({ method: "POST" })
         payment_method: payment.stripe_payment_method_id,
         confirm: true,
         off_session: true,
-        description: "Beam Bids hired-job success fee",
+        description: "ProjectBids hired-job success fee",
         metadata: { bidId: data.bidId, projectId: data.projectId, contractorId: payment.contractor_id },
       }, { idempotencyKey: `beam-hire-${data.projectId}-${data.bidId}-${feeAmount}` });
       await supabaseAdmin.from("bid_payments").update({ stripe_payment_intent_id: intent.id, updated_at: new Date().toISOString() }).eq("id", payment.id);
