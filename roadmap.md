@@ -19,3 +19,4 @@
 
 - [x] Contact card (phone/email/address) after hire
 - [x] Rename Beam Bids / Quote Slip to ProjectBids everywhere
+- [x] Sitemap at /sitemap.xml (public pages only) + Sitemap directive in robots.txt
