@@ -16,11 +16,11 @@ export function SiteHeader() {
     <header className="sticky top-0 z-30">
       <div className="frosted border-b border-border">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-          <Link to="/" className="flex min-w-0 items-center gap-2.5">
+          <Link to="/" className="flex shrink-0 items-center gap-2.5">
             <img src={logo} alt="ProjectBids logo" className="size-8 shrink-0" width={32} height={32} />
-            <span className="hidden truncate font-display text-lg tracking-tight min-[420px]:inline">ProjectBids</span>
+            <span className="hidden shrink-0 whitespace-nowrap font-display text-lg tracking-tight min-[420px]:inline">ProjectBids</span>
           </Link>
-          <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
+          <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-muted-foreground lg:flex xl:gap-7">
             <Link to="/projects" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               Browse jobs
             </Link>
@@ -43,7 +43,7 @@ export function SiteHeader() {
                   navigate({ to: "/" });
                 }}
               >
-                Sign out {displayName && `(${displayName})`}
+                Sign out
               </button>
             ) : (
               <Link to="/auth" className="hover:text-foreground">
@@ -60,11 +60,13 @@ export function SiteHeader() {
           </Button>
         </div>
         {user && (
-          <nav className="flex justify-center gap-6 border-t border-border py-2 text-sm font-medium text-muted-foreground md:hidden">
+          <nav className="flex justify-center gap-6 border-t border-border py-2 text-sm font-medium text-muted-foreground lg:hidden">
             <Link to="/projects" activeProps={{ className: "text-foreground" }}>Browse</Link>
             <Link to="/my-posts" activeProps={{ className: "text-foreground" }}>My Posts</Link>
             <Link to="/my-bids" activeProps={{ className: "text-foreground" }}>My Bids</Link>
             <Link to="/verify" activeProps={{ className: "text-foreground" }}>Verify</Link>
+            <Link to="/how-it-works" className="hidden sm:inline" activeProps={{ className: "text-foreground" }}>How it works</Link>
+            <button className="hidden sm:inline" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
           </nav>
         )}
       </div>
