@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { amIAdmin } from "@/lib/verification.functions";
+import logo from "@/assets/logo-concept-gavel.png";
 
 export function SiteHeader() {
   const { user, displayName } = useAuth();
@@ -14,12 +15,10 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30">
       <div className="frosted border-b border-border">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <Link to="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-lg bg-primary/10 ring-1 ring-primary/15">
-              <span className="size-4 rounded-sm bg-primary/70" />
-            </span>
-            <span className="font-display text-lg tracking-tight">ProjectBids</span>
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+          <Link to="/" className="flex min-w-0 items-center gap-2.5">
+            <img src={logo} alt="ProjectBids logo" className="size-8 shrink-0" width={32} height={32} />
+            <span className="hidden truncate font-display text-lg tracking-tight min-[420px]:inline">ProjectBids</span>
           </Link>
           <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
             <Link to="/projects" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
@@ -52,9 +51,10 @@ export function SiteHeader() {
               </Link>
             )}
           </nav>
-          <Button asChild size="default" className="py-2">
+          <Button asChild size="default" className="shrink-0 px-3 py-2 sm:px-4">
             <Link to="/post">
-              Post a project
+              <span className="hidden min-[420px]:inline">Post a project</span>
+              <span className="min-[420px]:hidden">Post</span>
               <span className="grid size-4 place-items-center rounded-full bg-primary-foreground/25 text-[11px] leading-none">+</span>
             </Link>
           </Button>
