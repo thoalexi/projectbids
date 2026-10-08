@@ -115,6 +115,21 @@ function ProjectDetail() {
       });
   }, [user]);
 
+  // Verified pros: fill any blanks from their approved verification application.
+  const app = verification.application;
+  useEffect(() => {
+    if (!app || app.status !== "approved") return;
+    setCreds((c) => ({
+      insured: c.insured || app.insured,
+      licensed: c.licensed || app.licensed,
+      website: c.website || app.website || "",
+      google_url: c.google_url || app.google_url || "",
+      yelp_url: c.yelp_url || app.yelp_url || "",
+      thumbtack_url: c.thumbtack_url || app.thumbtack_url || "",
+    }));
+    if (app.trade) setTrade((t) => t || app.trade!);
+  }, [app]);
+
   // Finish a bid after the card screen returned from a security check (page reload).
   useEffect(() => {
     if (!user) return;
