@@ -64,7 +64,7 @@ export function HireContactCard({
       { onConflict: "project_id,user_id" },
     );
     setSaving(false);
-    if (error) return toast.error("Couldn't save your contact info. Please try again.");
+    if (error) { toast.error("Couldn't save your contact info. Please try again."); return; }
     setEditing(false);
     qc.invalidateQueries({ queryKey: key });
   }
