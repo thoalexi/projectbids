@@ -15,6 +15,9 @@ type ApplicationInput = {
   insured: boolean;
   insuranceDetails?: string | null;
   insuranceImages?: string[];
+  licensed?: boolean;
+  licenseNumber?: string | null;
+  licenseImages?: string[];
   portfolioImages: string[];
   environment: StripeEnv;
 };
@@ -40,7 +43,10 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
       const images = data.portfolioImages.filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 10);
       if (images.length < 3) throw new Error("Add at least 3 photos of past work");
       const insuranceImages = (data.insuranceImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 5);
-      if (data.insured && insuranceImages.length === 0) throw new Error("Upload proof of insurance or your license (up to 5 images)");
+      if (data.insured && insuranceImages.length === 0) throw new Error("Upload your certificate of insurance (up to 5 images)");
+      const licenseImages = (data.licenseImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 5);
+      if (data.licensed && !clean(data.licenseNumber, 60)) throw new Error("Add your license number");
+      if (data.licensed && licenseImages.length === 0) throw new Error("Upload proof of your license (up to 5 images)");
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: existing } = await supabaseAdmin.from("contractor_verifications").select("*").eq("user_id", context.userId).maybeSingle();
@@ -60,6 +66,9 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
         insured: !!data.insured,
         insurance_details: clean(data.insuranceDetails, 300),
         insurance_images: (data.insured ? insuranceImages : []) as Json,
+        licensed: !!data.licensed,
+        license_number: data.licensed ? clean(data.licenseNumber, 60) : null,
+        license_images: (data.licensed ? licenseImages : []) as Json,
         portfolio_images: images as Json,
         environment: data.environment,
         status: alreadyPaid ? "pending_review" : "payment_required",

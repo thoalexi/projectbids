@@ -18,6 +18,7 @@ type BidInput = {
   earliestStart?: string | null;
   warranty?: string | null;
   insured: boolean;
+  licensed?: boolean;
   website?: string | null;
   googleUrl?: string | null;
   yelpUrl?: string | null;
@@ -123,6 +124,7 @@ export const submitBidWithPaymentMethod = createServerFn({ method: "POST" })
         earliest_start: data.earliestStart || null,
         warranty: data.warranty?.trim().slice(0, 40) || null,
         insured: data.insured,
+        licensed: !!data.licensed,
         website: data.website || null,
         google_url: data.googleUrl || null,
         yelp_url: data.yelpUrl || null,
