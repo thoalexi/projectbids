@@ -42,11 +42,10 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
       if (reviews.length === 0) throw new Error("Add at least one Google, Yelp, or Thumbtack review link");
       const images = data.portfolioImages.filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 10);
       if (images.length < 3) throw new Error("Add at least 3 photos of past work");
-      const insuranceImages = (data.insuranceImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 5);
-      if (data.insured && insuranceImages.length === 0) throw new Error("Upload your certificate of insurance (up to 5 images)");
-      const licenseImages = (data.licenseImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 5);
-      if (data.licensed && !clean(data.licenseNumber, 60)) throw new Error("Add your license number");
-      if (data.licensed && licenseImages.length === 0) throw new Error("Upload proof of your license (up to 5 images)");
+      const insuranceImages = (data.insuranceImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 3);
+      if (data.insured && insuranceImages.length === 0) throw new Error("Upload your certificate of insurance (up to 3 files)");
+      const licenseImages = (data.licenseImages ?? []).filter((p) => typeof p === "string" && p.startsWith(`storage:${context.userId}/`)).slice(0, 3);
+      if (data.licensed && licenseImages.length === 0) throw new Error("Upload proof of your license (up to 3 files)");
 
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: existing } = await supabaseAdmin.from("contractor_verifications").select("*").eq("user_id", context.userId).maybeSingle();
@@ -64,10 +63,10 @@ export const startVerificationApplication = createServerFn({ method: "POST" })
         yelp_url: url(data.yelpUrl),
         thumbtack_url: url(data.thumbtackUrl),
         insured: !!data.insured,
-        insurance_details: clean(data.insuranceDetails, 300),
+        insurance_details: null,
         insurance_images: (data.insured ? insuranceImages : []) as Json,
         licensed: !!data.licensed,
-        license_number: data.licensed ? clean(data.licenseNumber, 60) : null,
+        license_number: null,
         license_images: (data.licensed ? licenseImages : []) as Json,
         portfolio_images: images as Json,
         environment: data.environment,
