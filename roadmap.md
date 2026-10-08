@@ -16,3 +16,6 @@
 - [x] Drop license number field
 - [x] Show the "Insured" pill only when a pro is insured (no "Not insured" pill)
 - [x] Stack the job page back to one column (bid panel under the job)
+
+- [x] Contact card (phone/email/address) after hire
+- [x] Rename Beam Bids / Quote Slip to ProjectBids everywhere

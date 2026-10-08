@@ -31,9 +31,9 @@ export const Route = createFileRoute("/projects/")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Browse home projects — Beam Bids" },
+      { title: "Browse home projects — ProjectBids" },
       { name: "description", content: "Find Atlanta home improvement jobs, bid for free, and only pay when you get hired." },
-      { property: "og:title", content: "Browse home projects — Beam Bids" },
+      { property: "og:title", content: "Browse home projects — ProjectBids" },
       { property: "og:description", content: "Find Atlanta home improvement jobs, bid for free, and only pay when you get hired." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

@@ -99,6 +99,13 @@
       "when": 1791476831690,
       "tag": "0013_storage_owner_bound_read",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1791477866077,
+      "tag": "0014_hire_contacts",
+      "breakpoints": true
     }
   ]
 }

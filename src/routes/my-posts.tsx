@@ -8,9 +8,9 @@ import { formatDate, formatMoney } from "@/lib/projects";
 export const Route = createFileRoute("/my-posts")({
   head: () => ({
     meta: [
-      { title: "My Posts — Beam Bids" },
+      { title: "My Posts — ProjectBids" },
       { name: "description", content: "Every home project you've posted, with status and bids." },
-      { property: "og:title", content: "My Posts — Beam Bids" },
+      { property: "og:title", content: "My Posts — ProjectBids" },
       { property: "og:description", content: "Every home project you've posted, with status and bids." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

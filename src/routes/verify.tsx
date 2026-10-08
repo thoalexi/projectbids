@@ -18,9 +18,9 @@ import { confirmVerificationPayment, startVerificationApplication } from "@/lib/
 export const Route = createFileRoute("/verify")({
   head: () => ({
     meta: [
-      { title: "Become a Verified Pro — Beam Bids" },
-      { name: "description", content: "Share your past work, reviews and insurance to earn the Verified Pro badge on Beam Bids." },
-      { property: "og:title", content: "Become a Verified Pro — Beam Bids" },
+      { title: "Become a Verified Pro — ProjectBids" },
+      { name: "description", content: "Share your past work, reviews and insurance to earn the Verified Pro badge on ProjectBids." },
+      { property: "og:title", content: "Become a Verified Pro — ProjectBids" },
       { property: "og:description", content: "Earn the Verified Pro badge and unlock verified-only jobs in Atlanta." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

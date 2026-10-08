@@ -247,6 +247,50 @@ export type Database = {
         }
         Relationships: []
       }
+      hire_contacts: {
+        Row: {
+          address: string
+          email: string
+          id: string
+          name: string
+          notes: string
+          phone: string
+          project_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string
+          phone?: string
+          project_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string
+          phone?: string
+          project_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hire_contacts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -395,6 +439,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_hire_party: {
+        Args: { _project_id: string; _user_id: string }
         Returns: boolean
       }
       is_verified_contractor: { Args: { _user_id: string }; Returns: boolean }

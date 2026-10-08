@@ -8,9 +8,9 @@ import { projectsQuery } from "@/lib/projects";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Quote Slip — Post the job, get honest bids" },
+      { title: "ProjectBids — Post the job, get honest bids" },
       { name: "description", content: "Describe a home project, add a photo and date, and compare bids from local contractors." },
-      { property: "og:title", content: "Quote Slip — Post the job, get honest bids" },
+      { property: "og:title", content: "ProjectBids — Post the job, get honest bids" },
       { property: "og:description", content: "Describe a home project, add a photo and date, and compare bids from local contractors." },
     ],
   }),

@@ -12,9 +12,9 @@ import { toAnswers, toOwnerQuestions } from "@/lib/questions";
 export const Route = createFileRoute("/edit/$id")({
   head: () => ({
     meta: [
-      { title: "Edit your project — Beam Bids" },
+      { title: "Edit your project — ProjectBids" },
       { name: "description", content: "Update your project details before contractors start bidding." },
-      { property: "og:title", content: "Edit your project — Beam Bids" },
+      { property: "og:title", content: "Edit your project — ProjectBids" },
       { property: "og:description", content: "Update your project details before contractors start bidding." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
