@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -6,9 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { amIAdmin } from "@/lib/verification.functions";
 import logo from "@/assets/logo-concept-gavel.png";
+import { FeedbackDialog } from "@/components/FeedbackDialog";
 
 export function SiteHeader() {
   const { user, displayName } = useAuth();
+  const navigate = useNavigate();
+  const [fbOpen, setFbOpen] = useState(false);
   const navigate = useNavigate();
   const checkAdmin = useServerFn(amIAdmin);
   const { data: isAdmin } = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
