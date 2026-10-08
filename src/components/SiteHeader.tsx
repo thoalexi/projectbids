@@ -7,12 +7,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { amIAdmin } from "@/lib/verification.functions";
 import logo from "@/assets/logo-concept-gavel.png";
-import { FeedbackDialog } from "@/components/FeedbackDialog";
 
 export function SiteHeader() {
   const { user, displayName } = useAuth();
   const navigate = useNavigate();
-  const [fbOpen, setFbOpen] = useState(false);
   const checkAdmin = useServerFn(amIAdmin);
   const { data: isAdmin } = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
   return (
@@ -43,9 +41,6 @@ export function SiteHeader() {
             <Link to="/how-it-works" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               How it works
             </Link>
-            <button className="hover:text-foreground" onClick={() => setFbOpen(true)}>
-              Feedback
-            </button>
             {user ? (
               <button
                 className="hover:text-foreground"
@@ -79,7 +74,6 @@ export function SiteHeader() {
               <Link to="/verify" activeProps={{ className: "text-foreground" }}>Verify</Link>
             </>
           )}
-          <button className="hover:text-foreground" onClick={() => setFbOpen(true)}>Feedback</button>
           <Link to="/how-it-works" className="hidden sm:inline" activeProps={{ className: "text-foreground" }}>How it works</Link>
           {user ? (
             <button className="hidden sm:inline" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
@@ -88,7 +82,6 @@ export function SiteHeader() {
           )}
         </nav>
       </div>
-      <FeedbackDialog open={fbOpen} onOpenChange={setFbOpen} />
     </header>
   );
 }
