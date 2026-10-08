@@ -365,9 +365,7 @@ function ProjectDetail() {
                         {b.contractor_name}
                         {b.trade && ` · ${b.trade}`}
                         {b.contractor_verified && <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary ring-1 ring-primary">Verified Pro</span>}
-                        <span className={`ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold ring-1 ${b.insured ? "text-success ring-success" : "text-muted-foreground ring-border"}`}>
-                          {b.insured ? "Insured" : "Not insured"}
-                        </span>
+                        {b.insured && <span className="ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold text-success ring-1 ring-success">Insured</span>}
                         {b.licensed && <span className="ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold text-success ring-1 ring-success">Licensed</span>}
                       </p>
                       <p className="text-xs text-muted-foreground">"{b.message}"</p>
