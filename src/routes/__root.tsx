@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import { AuthProvider } from "@/lib/auth";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
@@ -120,6 +121,7 @@ function RootComponent() {
           </div>
           <SiteHeader />
           <Outlet />
+          <SiteFooter />
         </div>
         <Toaster />
       </AuthProvider>
