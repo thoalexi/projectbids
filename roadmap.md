@@ -21,5 +21,5 @@
 - [x] Rename Beam Bids / Quote Slip to ProjectBids everywhere
 - [x] Sitemap at /sitemap.xml (public pages only) + Sitemap directive in robots.txt
 
-- [ ] Feedback button in the header (optional email, anyone can submit) with an admin queue at /admin/feedback
-- [ ] Make the ProjectBids logo and name in the header larger
+- [x] Feedback button in the page footer (optional email, anyone can submit) with an admin queue at /admin/feedback
+- [x] Make the ProjectBids logo and name in the header larger
