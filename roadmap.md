@@ -7,7 +7,7 @@
 - [x] Confirm purchase behavior and that subscriptions are not part of the product.
 - [x] Verify the jobs page and payment flow still work in the preview.- [x] Verified Pro contractors ($5 application, admin review before badge) and Verified Homeowners (2+ hires), with verified-only jobs and filters.
 - [x] Owner can turn on admin access from the review page (owner email only).
-
+10: 
 - [x] Keep a typed bid through the card security check and finish submitting it
 - [x] Homeowner button reads "Hire" (and "Hiring…")
 
@@ -17,6 +17,9 @@
 - [x] Show the "Insured" pill only when a pro is insured (no "Not insured" pill)
 - [x] Stack the job page back to one column (bid panel under the job)
 
-- [x] Contact card (phone/email/address) after hire
+20: - [x] Contact card (phone/email/address) after hire
 - [x] Rename Beam Bids / Quote Slip to ProjectBids everywhere
 - [x] Sitemap at /sitemap.xml (public pages only) + Sitemap directive in robots.txt
+
+- [ ] Feedback button in the header (optional email, anyone can submit) with an admin queue at /admin/feedback
+- [ ] Make the ProjectBids logo and name in the header larger
