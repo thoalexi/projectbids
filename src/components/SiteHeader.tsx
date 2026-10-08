@@ -21,8 +21,8 @@ export function SiteHeader() {
       <div className="frosted border-b border-border">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
           <Link to="/" className="flex shrink-0 items-center gap-2.5">
-            <img src={logo} alt="ProjectBids logo" className="size-8 shrink-0" width={32} height={32} />
-            <span className="hidden shrink-0 whitespace-nowrap font-display text-lg tracking-tight min-[420px]:inline">ProjectBids</span>
+            <img src={logo} alt="ProjectBids logo" className="size-10 shrink-0" width={40} height={40} />
+            <span className="hidden shrink-0 whitespace-nowrap font-display text-xl tracking-tight min-[420px]:inline">ProjectBids</span>
           </Link>
           <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-muted-foreground lg:flex xl:gap-7">
             <Link to="/projects" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
