@@ -27,7 +27,7 @@ export const Route = createFileRoute("/projects/$id")({
     meta: [
       { title: "Project details & bids — ProjectBids" },
       { name: "description", content: "See the project details and compare contractor bids." },
-      { property: "og:title", content: "Project details & bids — Beam Bids" },
+      { property: "og:title", content: "Project details & bids — ProjectBids" },
       { property: "og:description", content: "See the project details and compare contractor bids." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
