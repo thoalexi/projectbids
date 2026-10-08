@@ -25,7 +25,7 @@ function Index() {
   return (
     <main>
       <section className="mx-auto max-w-6xl px-6 pb-12 pt-14">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="grid items-center gap-8 md:grid-cols-[1.15fr_0.85fr] lg:gap-10">
           <div className="max-w-[46ch]">
             <p className="mb-5 inline-flex items-center gap-2 text-xs font-medium uppercase tracking-[0.14em] text-primary">
               <span className="size-1.5 rounded-full bg-primary" />
