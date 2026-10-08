@@ -51,9 +51,10 @@ export function SiteHeader() {
               </Link>
             )}
           </nav>
-          <Button asChild size="default" className="py-2">
+          <Button asChild size="default" className="shrink-0 px-3 py-2 sm:px-4">
             <Link to="/post">
-              Post a project
+              <span className="hidden min-[420px]:inline">Post a project</span>
+              <span className="min-[420px]:hidden">Post</span>
               <span className="grid size-4 place-items-center rounded-full bg-primary-foreground/25 text-[11px] leading-none">+</span>
             </Link>
           </Button>
