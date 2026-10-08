@@ -17,6 +17,7 @@ import { Route as MyPostsRouteImport } from './routes/my-posts'
 import { Route as PostRouteImport } from './routes/post'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
 import { Route as AdminVerificationsRouteImport } from './routes/admin.verifications'
 import { Route as EditIdRouteImport } from './routes/edit.$id'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -63,6 +64,11 @@ const VerifyRoute = VerifyRouteImport.update({
   path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminFeedbackRoute = AdminFeedbackRouteImport.update({
+  id: '/admin/feedback',
+  path: '/admin/feedback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminVerificationsRoute = AdminVerificationsRouteImport.update({
   id: '/admin/verifications',
   path: '/admin/verifications',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/post': typeof PostRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/post': typeof PostRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/post': typeof PostRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
+  '/admin/feedback': typeof AdminFeedbackRoute
   '/admin/verifications': typeof AdminVerificationsRoute
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/post'
     | '/sitemap.xml'
     | '/verify'
+    | '/admin/feedback'
     | '/admin/verifications'
     | '/edit/$id'
     | '/projects/$id'
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/post'
     | '/sitemap.xml'
     | '/verify'
+    | '/admin/feedback'
     | '/admin/verifications'
     | '/edit/$id'
     | '/projects/$id'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/post'
     | '/sitemap.xml'
     | '/verify'
+    | '/admin/feedback'
     | '/admin/verifications'
     | '/edit/$id'
     | '/projects/$id'
@@ -193,6 +205,7 @@ export interface RootRouteChildren {
   PostRoute: typeof PostRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerifyRoute: typeof VerifyRoute
+  AdminFeedbackRoute: typeof AdminFeedbackRoute
   AdminVerificationsRoute: typeof AdminVerificationsRoute
   EditIdRoute: typeof EditIdRoute
   ProjectsIdRoute: typeof ProjectsIdRoute
@@ -258,6 +271,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/feedback': {
+      id: '/admin/feedback'
+      path: '/admin/feedback'
+      fullPath: '/admin/feedback'
+      preLoaderRoute: typeof AdminFeedbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/verifications': {
       id: '/admin/verifications'
       path: '/admin/verifications'
@@ -305,6 +325,7 @@ const rootRouteChildren: RootRouteChildren = {
   PostRoute: PostRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerifyRoute: VerifyRoute,
+  AdminFeedbackRoute: AdminFeedbackRoute,
   AdminVerificationsRoute: AdminVerificationsRoute,
   EditIdRoute: EditIdRoute,
   ProjectsIdRoute: ProjectsIdRoute,

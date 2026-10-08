@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -6,10 +7,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { amIAdmin } from "@/lib/verification.functions";
 import logo from "@/assets/logo-concept-gavel.png";
+import { FeedbackDialog } from "@/components/FeedbackDialog";
 
 export function SiteHeader() {
   const { user, displayName } = useAuth();
   const navigate = useNavigate();
+  const [fbOpen, setFbOpen] = useState(false);
   const checkAdmin = useServerFn(amIAdmin);
   const { data: isAdmin } = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
   return (
@@ -17,8 +20,8 @@ export function SiteHeader() {
       <div className="frosted border-b border-border">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
           <Link to="/" className="flex shrink-0 items-center gap-2.5">
-            <img src={logo} alt="ProjectBids logo" className="size-8 shrink-0" width={32} height={32} />
-            <span className="hidden shrink-0 whitespace-nowrap font-display text-lg tracking-tight min-[420px]:inline">ProjectBids</span>
+            <img src={logo} alt="ProjectBids logo" className="size-10 shrink-0" width={40} height={40} />
+            <span className="hidden shrink-0 whitespace-nowrap font-display text-xl tracking-tight min-[420px]:inline">ProjectBids</span>
           </Link>
           <nav className="hidden items-center gap-5 whitespace-nowrap text-sm font-medium text-muted-foreground lg:flex xl:gap-7">
             <Link to="/projects" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
@@ -29,12 +32,20 @@ export function SiteHeader() {
                 <Link to="/my-posts" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Posts</Link>
                 <Link to="/my-bids" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Bids</Link>
                 <Link to="/verify" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Get verified</Link>
-                {isAdmin && <Link to="/admin/verifications" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Review</Link>}
+                {isAdmin && (
+                  <>
+                    <Link to="/admin/verifications" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Review</Link>
+                    <Link to="/admin/feedback" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Feedback queue</Link>
+                  </>
+                )}
               </>
             )}
             <Link to="/how-it-works" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               How it works
             </Link>
+            <button className="hover:text-foreground" onClick={() => setFbOpen(true)}>
+              Feedback
+            </button>
             {user ? (
               <button
                 className="hover:text-foreground"
@@ -59,17 +70,25 @@ export function SiteHeader() {
             </Link>
           </Button>
         </div>
-        {user && (
-          <nav className="flex justify-center gap-6 border-t border-border py-2 text-sm font-medium text-muted-foreground lg:hidden">
-            <Link to="/projects" activeProps={{ className: "text-foreground" }}>Browse</Link>
-            <Link to="/my-posts" activeProps={{ className: "text-foreground" }}>My Posts</Link>
-            <Link to="/my-bids" activeProps={{ className: "text-foreground" }}>My Bids</Link>
-            <Link to="/verify" activeProps={{ className: "text-foreground" }}>Verify</Link>
-            <Link to="/how-it-works" className="hidden sm:inline" activeProps={{ className: "text-foreground" }}>How it works</Link>
+        <nav className="flex flex-wrap justify-center gap-x-6 gap-y-1 border-t border-border py-2 text-sm font-medium text-muted-foreground lg:hidden">
+          <Link to="/projects" activeProps={{ className: "text-foreground" }}>Browse</Link>
+          {user && (
+            <>
+              <Link to="/my-posts" activeProps={{ className: "text-foreground" }}>My Posts</Link>
+              <Link to="/my-bids" activeProps={{ className: "text-foreground" }}>My Bids</Link>
+              <Link to="/verify" activeProps={{ className: "text-foreground" }}>Verify</Link>
+            </>
+          )}
+          <button className="hover:text-foreground" onClick={() => setFbOpen(true)}>Feedback</button>
+          <Link to="/how-it-works" className="hidden sm:inline" activeProps={{ className: "text-foreground" }}>How it works</Link>
+          {user ? (
             <button className="hidden sm:inline" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
-          </nav>
-        )}
+          ) : (
+            <Link to="/auth" className="hidden sm:inline">Sign in</Link>
+          )}
+        </nav>
       </div>
+      <FeedbackDialog open={fbOpen} onOpenChange={setFbOpen} />
     </header>
   );
 }
