@@ -33,12 +33,20 @@ export function SiteHeader() {
                 <Link to="/my-posts" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Posts</Link>
                 <Link to="/my-bids" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Bids</Link>
                 <Link to="/verify" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Get verified</Link>
-                {isAdmin && <Link to="/admin/verifications" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Review</Link>}
+                {isAdmin && (
+                  <>
+                    <Link to="/admin/verifications" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Review</Link>
+                    <Link to="/admin/feedback" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Feedback queue</Link>
+                  </>
+                )}
               </>
             )}
             <Link to="/how-it-works" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               How it works
             </Link>
+            <button className="hover:text-foreground" onClick={() => setFbOpen(true)}>
+              Feedback
+            </button>
             {user ? (
               <button
                 className="hover:text-foreground"
