@@ -92,6 +92,13 @@
       "when": 1791476769547,
       "tag": "0012_profiles_owner_only_read",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791476831690,
+      "tag": "0013_storage_owner_bound_read",
+      "breakpoints": true
     }
   ]
 }
