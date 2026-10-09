@@ -195,6 +195,8 @@ export const acceptBidAndChargeFee = createServerFn({ method: "POST" })
       if (intent.status === "succeeded") {
         const { data: finalized } = await supabaseAdmin.rpc("finalize_paid_bid", { p_payment_intent_id: intent.id });
         if (!finalized) return { error: "We couldn't complete the hire. Please try again." };
+        const { releaseFinishedBidCards } = await import("@/lib/card-release.server");
+        await releaseFinishedBidCards(supabaseAdmin, data.projectId).catch((e) => console.error("Card release", e));
         return { paid: true };
       }
       return { pending: true };

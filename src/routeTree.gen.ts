@@ -22,6 +22,7 @@ import { Route as AdminVerificationsRouteImport } from './routes/admin.verificat
 import { Route as EditIdRouteImport } from './routes/edit.$id'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
+import { Route as ApiPublicHooksReleaseCardsRouteImport } from './routes/api/public/hooks/release-cards'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +90,12 @@ const ProjectsIdRoute = ProjectsIdRouteImport.update({
   path: '/projects/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksReleaseCardsRoute =
+  ApiPublicHooksReleaseCardsRouteImport.update({
+    id: '/api/public/hooks/release-cards',
+    path: '/api/public/hooks/release-cards',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -110,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/api/public/hooks/release-cards': typeof ApiPublicHooksReleaseCardsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -126,6 +134,7 @@ export interface FileRoutesByTo {
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects': typeof ProjectsIndexRoute
+  '/api/public/hooks/release-cards': typeof ApiPublicHooksReleaseCardsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -143,6 +152,7 @@ export interface FileRoutesById {
   '/edit/$id': typeof EditIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/': typeof ProjectsIndexRoute
+  '/api/public/hooks/release-cards': typeof ApiPublicHooksReleaseCardsRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/edit/$id'
     | '/projects/$id'
     | '/projects/'
+    | '/api/public/hooks/release-cards'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/edit/$id'
     | '/projects/$id'
     | '/projects'
+    | '/api/public/hooks/release-cards'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -193,6 +205,7 @@ export interface FileRouteTypes {
     | '/edit/$id'
     | '/projects/$id'
     | '/projects/'
+    | '/api/public/hooks/release-cards'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -210,6 +223,7 @@ export interface RootRouteChildren {
   EditIdRoute: typeof EditIdRoute
   ProjectsIdRoute: typeof ProjectsIdRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
+  ApiPublicHooksReleaseCardsRoute: typeof ApiPublicHooksReleaseCardsRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -306,6 +320,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/release-cards': {
+      id: '/api/public/hooks/release-cards'
+      path: '/api/public/hooks/release-cards'
+      fullPath: '/api/public/hooks/release-cards'
+      preLoaderRoute: typeof ApiPublicHooksReleaseCardsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -330,6 +351,7 @@ const rootRouteChildren: RootRouteChildren = {
   EditIdRoute: EditIdRoute,
   ProjectsIdRoute: ProjectsIdRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
+  ApiPublicHooksReleaseCardsRoute: ApiPublicHooksReleaseCardsRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport

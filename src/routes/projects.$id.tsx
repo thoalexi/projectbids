@@ -509,7 +509,7 @@ function ProjectDetail() {
               <p className="mt-1 text-sm text-muted-foreground">
                 {verification.status === "pending_review"
                   ? "Your Verified Pro application is being reviewed. You can bid here once it's approved."
-                  : "This homeowner only takes bids from Verified Pros. Share your past work, reviews and insurance to apply — it's a one-time $5 fee."}
+                  : "This homeowner only takes bids from Verified Pros. Share your past work and reviews to apply (insurance and license are optional) — it's a one-time $5 fee."}
               </p>
               {verification.status !== "pending_review" && (
                 <Button asChild className="mt-5 w-full"><Link to="/verify">Get verified — $5</Link></Button>

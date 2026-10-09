@@ -17,6 +17,11 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             await supabaseAdmin.from("contractor_verifications").update({ status: "pending_review", submitted_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq("stripe_payment_intent_id", object.id).eq("status", "payment_required");
           } else if (event.type === "payment_intent.succeeded" && object.id) {
             await supabaseAdmin.rpc("finalize_paid_bid", { p_payment_intent_id: object.id });
+            const projectId = object.metadata?.["projectId"];
+            if (projectId) {
+              const { releaseFinishedBidCards } = await import("@/lib/card-release.server");
+              await releaseFinishedBidCards(supabaseAdmin, projectId).catch((e) => console.error("Card release", e));
+            }
           } else if (event.type === "payment_intent.payment_failed" && object.id) {
             const { data: payment } = await supabaseAdmin.from("bid_payments").select("id, project_id, bid_id").eq("stripe_payment_intent_id", object.id).maybeSingle();
             if (payment) {

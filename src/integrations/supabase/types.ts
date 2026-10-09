@@ -17,6 +17,7 @@ export type Database = {
       bid_payments: {
         Row: {
           bid_id: string
+          card_released_at: string | null
           contractor_id: string
           created_at: string
           currency: string
@@ -34,6 +35,7 @@ export type Database = {
         }
         Insert: {
           bid_id: string
+          card_released_at?: string | null
           contractor_id: string
           created_at?: string
           currency?: string
@@ -51,6 +53,7 @@ export type Database = {
         }
         Update: {
           bid_id?: string
+          card_released_at?: string | null
           contractor_id?: string
           created_at?: string
           currency?: string

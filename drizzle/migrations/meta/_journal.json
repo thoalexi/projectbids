@@ -113,6 +113,13 @@
       "when": 1791493355048,
       "tag": "0015_feedback_table",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791572327410,
+      "tag": "0016_bid_payment_card_release",
+      "breakpoints": true
     }
   ]
 }
