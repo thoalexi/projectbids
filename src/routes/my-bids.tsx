@@ -82,7 +82,7 @@ function MyBids() {
                         </p>
                         {b.payment && (
                           <p className="mt-1 text-xs text-muted-foreground">
-                            Success fee {formatFee(b.payment.fee_amount_cents)} · {b.payment.status === "ready" ? "card ready" : b.payment.status === "paid" ? "paid" : b.payment.status === "closed" ? "no charge" : b.payment.status === "expired" ? "expired — no charge" : b.payment.status.replace("_", " ")}
+                            {b.payment.status === "closed" ? "Card released · Not selected — no charge" : b.payment.status === "expired" ? "Card released · Done-by date passed — no charge" : <>Success fee {formatFee(b.payment.fee_amount_cents)} · {b.payment.status === "ready" ? "card ready, only charged if hired" : b.payment.status === "paid" ? "paid" : b.payment.status.replace("_", " ")}</>}
                           </p>
                         )}
                       </div>
