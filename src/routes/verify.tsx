@@ -106,7 +106,7 @@ function VerifyPage() {
   const { application, status, isLoading, refetch } = useMyVerification();
   const start = useServerFn(startVerificationApplication);
   const confirm = useServerFn(confirmVerificationPayment);
-  const [form, setForm] = useState({ businessName: "", trade: "", website: "", googleUrl: "", yelpUrl: "", thumbtackUrl: "", insured: false, insuranceDetails: "", licensed: false, licenseNumber: "" });
+  const [form, setForm] = useState({ businessName: "", trade: "", website: "", googleUrl: "", yelpUrl: "", thumbtackUrl: "", insured: false, licensed: false });
   const [photos, setPhotos] = useState<string[]>([]);
   const [insuranceImages, setInsuranceImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
@@ -126,9 +126,7 @@ function VerifyPage() {
         yelpUrl: application.yelp_url ?? "",
         thumbtackUrl: application.thumbtack_url ?? "",
         insured: application.insured,
-        insuranceDetails: application.insurance_details ?? "",
         licensed: application.licensed,
-        licenseNumber: application.license_number ?? "",
       });
       setPhotos(Array.isArray(application.portfolio_images) ? (application.portfolio_images as string[]) : []);
       setInsuranceImages(Array.isArray(application.insurance_images) ? (application.insurance_images as string[]) : []);

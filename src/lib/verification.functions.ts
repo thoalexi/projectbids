@@ -13,10 +13,8 @@ type ApplicationInput = {
   yelpUrl?: string | null;
   thumbtackUrl?: string | null;
   insured: boolean;
-  insuranceDetails?: string | null;
   insuranceImages?: string[];
   licensed?: boolean;
-  licenseNumber?: string | null;
   licenseImages?: string[];
   portfolioImages: string[];
   environment: StripeEnv;
