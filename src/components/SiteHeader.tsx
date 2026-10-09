@@ -71,6 +71,12 @@ export function SiteHeader() {
               <Link to="/my-posts" activeProps={{ className: "text-foreground" }}>My Posts</Link>
               <Link to="/my-bids" activeProps={{ className: "text-foreground" }}>My Bids</Link>
               <Link to="/verify" activeProps={{ className: "text-foreground" }}>Verify</Link>
+              {isAdmin && (
+                <>
+                  <Link to="/admin/verifications" activeProps={{ className: "text-foreground" }}>Review</Link>
+                  <Link to="/admin/feedback" activeProps={{ className: "text-foreground" }}>Feedback queue</Link>
+                </>
+              )}
             </>
           )}
           <Link to="/how-it-works" className="hidden sm:inline" activeProps={{ className: "text-foreground" }}>How it works</Link>
