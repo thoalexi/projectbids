@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/lib/auth";
+import { AuthChecking, useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { amIAdmin, claimOwnerAdmin } from "@/lib/verification.functions";
@@ -35,7 +35,7 @@ type FeedbackRow = {
 };
 
 function FeedbackAdminPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const qc = useQueryClient();
   const checkAdmin = useServerFn(amIAdmin);
   const claim = useServerFn(claimOwnerAdmin);
@@ -57,6 +57,7 @@ function FeedbackAdminPage() {
     },
   });
 
+  if (authLoading) return <AuthChecking />;
   if (!user)
     return (
       <main className="mx-auto max-w-4xl px-6 py-16">

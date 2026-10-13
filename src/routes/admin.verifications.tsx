@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/lib/auth";
+import { AuthChecking, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { ProjectImage } from "@/components/ProjectImage";
 import { ProofFile } from "@/components/ProofFile";
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/admin/verifications")({
 const LABEL: Record<string, string> = { pending_review: "Waiting for review", approved: "Approved", rejected: "Needs changes" };
 
 function AdminPage() {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const qc = useQueryClient();
   const checkAdmin = useServerFn(amIAdmin);
   const list = useServerFn(listVerificationApplications);
@@ -38,6 +38,7 @@ function AdminPage() {
   const admin = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
   const apps = useQuery({ queryKey: ["verification-apps"], enabled: admin.data === true, queryFn: () => list() });
 
+  if (authLoading) return <AuthChecking />;
   if (!user) return <main className="mx-auto max-w-4xl px-6 py-16"><Link to="/auth" search={{ redirect: "/admin/verifications" }} className="text-primary">Sign in</Link></main>;
   if (admin.isLoading) return <main className="mx-auto max-w-4xl px-6 py-16 text-muted-foreground">Loading…</main>;
   if (!admin.data)

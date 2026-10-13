@@ -19,3 +19,4 @@
 - Visual tokens live in src/styles.css (`frosted`, `field`, `font-display` utilities); components use semantic tokens only.
 - Contractor success fees use authenticated server functions and a signature-verified payment webhook; project awards require a paid bid record so clients cannot bypass payment.
 - Contractor verification lives in `contractor_verifications` (writes only via server functions in src/lib/verification.functions.ts; admins via `has_role`); verified-only bidding is enforced in the `enforce_bid_limit` trigger so the UI can't be bypassed.
+- Post-sign-in return paths always go through `safeRedirect` (src/lib/safe-redirect.ts); the single auth listener lives in AuthProvider and exposes a loading/authed/anon status — prevents open redirects, loops and signed-out flashes.

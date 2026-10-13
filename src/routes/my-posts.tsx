@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
+import { AuthChecking, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatMoney } from "@/lib/projects";
 
@@ -47,7 +47,7 @@ function MyPosts() {
     },
   });
 
-  if (loading) return null;
+  if (loading) return <AuthChecking />;
   if (!user) return <SignInPrompt title="My Posts" redirect="/my-posts" />;
 
   return (

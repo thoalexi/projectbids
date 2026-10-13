@@ -1,5 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { supabase } from "@/integrations/supabase/client";
+import { Link } from "@tanstack/react-router";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -8,8 +7,7 @@ import { amIAdmin } from "@/lib/verification.functions";
 import logo from "@/assets/logo-concept-gavel.png";
 
 export function SiteHeader() {
-  const { user, displayName } = useAuth();
-  const navigate = useNavigate();
+  const { user, status, signOut } = useAuth();
   const checkAdmin = useServerFn(amIAdmin);
   const { data: isAdmin } = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
   return (
@@ -40,13 +38,12 @@ export function SiteHeader() {
             <Link to="/how-it-works" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>
               How it works
             </Link>
-            {user ? (
+            {status === "loading" ? (
+              <span className="inline-block h-4 w-14 animate-pulse rounded bg-muted" aria-hidden="true" />
+            ) : user ? (
               <button
                 className="hover:text-foreground"
-                onClick={async () => {
-                  await supabase.auth.signOut();
-                  navigate({ to: "/" });
-                }}
+                onClick={signOut}
               >
                 Sign out
               </button>
@@ -80,8 +77,10 @@ export function SiteHeader() {
             </>
           )}
           <Link to="/how-it-works" className="hidden sm:inline" activeProps={{ className: "text-foreground" }}>How it works</Link>
-          {user ? (
-            <button className="hidden sm:inline" onClick={async () => { await supabase.auth.signOut(); navigate({ to: "/" }); }}>Sign out</button>
+          {status === "loading" ? (
+            <span className="hidden h-4 w-14 animate-pulse rounded bg-muted sm:inline-block" aria-hidden="true" />
+          ) : user ? (
+            <button className="hidden sm:inline" onClick={signOut}>Sign out</button>
           ) : (
             <Link to="/auth" className="hidden sm:inline">Sign in</Link>
           )}
