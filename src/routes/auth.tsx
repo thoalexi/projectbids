@@ -95,7 +95,7 @@ function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email: parsed.data.email,
           password,
-          options: { emailRedirectTo: window.location.origin + target, data: { display_name: parsed.data.name } },
+          options: { emailRedirectTo: window.location.origin, data: { display_name: parsed.data.name } },
         });
         if (error) setError(friendlyAuthError(error, "signup"));
         else if (!data.session) setSent("signup");

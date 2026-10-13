@@ -38,6 +38,7 @@ function AdminPage() {
   const admin = useQuery({ queryKey: ["am-admin", user?.id], enabled: !!user, queryFn: () => checkAdmin() });
   const apps = useQuery({ queryKey: ["verification-apps"], enabled: admin.data === true, queryFn: () => list() });
 
+  if (authLoading) return <AuthChecking />;
   if (!user) return <main className="mx-auto max-w-4xl px-6 py-16"><Link to="/auth" search={{ redirect: "/admin/verifications" }} className="text-primary">Sign in</Link></main>;
   if (admin.isLoading) return <main className="mx-auto max-w-4xl px-6 py-16 text-muted-foreground">Loading…</main>;
   if (!admin.data)

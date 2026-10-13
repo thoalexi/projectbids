@@ -15,6 +15,7 @@ import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as MyBidsRouteImport } from './routes/my-bids'
 import { Route as MyPostsRouteImport } from './routes/my-posts'
 import { Route as PostRouteImport } from './routes/post'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AdminFeedbackRouteImport } from './routes/admin.feedback'
@@ -53,6 +54,11 @@ const MyPostsRoute = MyPostsRouteImport.update({
 const PostRoute = PostRouteImport.update({
   id: '/post',
   path: '/post',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
   '/admin/feedback': typeof AdminFeedbackRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
   '/admin/feedback': typeof AdminFeedbackRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/my-bids': typeof MyBidsRoute
   '/my-posts': typeof MyPostsRoute
   '/post': typeof PostRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/verify': typeof VerifyRoute
   '/admin/feedback': typeof AdminFeedbackRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/verify'
     | '/admin/feedback'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/verify'
     | '/admin/feedback'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/my-bids'
     | '/my-posts'
     | '/post'
+    | '/reset-password'
     | '/sitemap.xml'
     | '/verify'
     | '/admin/feedback'
@@ -216,6 +228,7 @@ export interface RootRouteChildren {
   MyBidsRoute: typeof MyBidsRoute
   MyPostsRoute: typeof MyPostsRoute
   PostRoute: typeof PostRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   VerifyRoute: typeof VerifyRoute
   AdminFeedbackRoute: typeof AdminFeedbackRoute
@@ -269,6 +282,13 @@ declare module '@tanstack/react-router' {
       path: '/post'
       fullPath: '/post'
       preLoaderRoute: typeof PostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sitemap.xml': {
@@ -344,6 +364,7 @@ const rootRouteChildren: RootRouteChildren = {
   MyBidsRoute: MyBidsRoute,
   MyPostsRoute: MyPostsRoute,
   PostRoute: PostRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   VerifyRoute: VerifyRoute,
   AdminFeedbackRoute: AdminFeedbackRoute,

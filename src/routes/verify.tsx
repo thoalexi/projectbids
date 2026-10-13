@@ -134,6 +134,7 @@ function VerifyPage() {
     } else if (displayName) setForm((f) => ({ ...f, businessName: f.businessName || displayName }));
   }, [application, displayName]);
 
+  if (authLoading) return <AuthChecking />;
   if (!user)
     return (
       <main className="mx-auto max-w-xl px-6 py-16">
