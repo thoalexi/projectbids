@@ -23,3 +23,5 @@
 
 - [x] Feedback button in the page footer (optional email, anyone can submit) with an admin queue at /admin/feedback
 - [x] Make the ProjectBids logo and name in the header larger
+
+- [x] Sign-in reliability fix (loading state, Google return, reset password, safe redirects)
