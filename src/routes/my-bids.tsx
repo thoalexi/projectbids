@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
+import { AuthChecking, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/projects";
 import { SignInPrompt } from "./my-posts";
@@ -44,7 +44,7 @@ function MyBids() {
     queryFn: () => getMyBidPayments(),
   });
 
-  if (loading) return null;
+  if (loading) return <AuthChecking />;
   if (!user) return <SignInPrompt title="My Bids" redirect="/my-bids" />;
 
   const rows = (data ?? []).map((b) => {

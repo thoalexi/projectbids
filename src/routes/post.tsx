@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
+import { AuthChecking, useAuth } from "@/lib/auth";
 import { firstName } from "@/lib/projects";
 import { Button } from "@/components/ui/button";
 import { ProjectForm } from "@/components/ProjectForm";
@@ -25,7 +25,7 @@ function PostProject() {
   const navigate = useNavigate();
   const qc = useQueryClient();
 
-  if (loading) return null;
+  if (loading) return <AuthChecking />;
   if (!user)
     return (
       <main className="mx-auto max-w-xl px-6 py-20">

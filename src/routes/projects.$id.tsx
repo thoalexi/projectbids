@@ -5,7 +5,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { CheckCircle2, ImagePlus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
+import { AuthChecking, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -75,7 +75,7 @@ function initials(name: string) {
 
 function ProjectDetail() {
   const { id } = Route.useParams();
-  const { user, displayName } = useAuth();
+  const { user, displayName, loading: authLoading } = useAuth();
   const qc = useQueryClient();
   const { data: project, isLoading } = useQuery(projectQuery(id));
   const [amount, setAmount] = useState("");

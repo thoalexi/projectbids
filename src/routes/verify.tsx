@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { BadgeCheck, ImagePlus, LoaderCircle, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/lib/auth";
+import { AuthChecking, useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -102,7 +102,7 @@ function CredentialBlock(p: {
 }
 
 function VerifyPage() {
-  const { user, displayName } = useAuth();
+  const { user, displayName, loading: authLoading } = useAuth();
   const { application, status, isLoading, refetch } = useMyVerification();
   const start = useServerFn(startVerificationApplication);
   const confirm = useServerFn(confirmVerificationPayment);
