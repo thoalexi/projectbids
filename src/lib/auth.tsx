@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       redirected.current = true;
       const next = safeRedirect(raw);
       const here = window.location.pathname + window.location.search;
-      if (next !== "/" && next !== here) router.navigate({ to: next, replace: true });
+      if (next !== "/" && next !== here) router.navigate({ href: next, replace: true });
     };
 
     const apply = (u: User | null) => {

@@ -57,7 +57,7 @@ function AuthPage() {
     if (status !== "authed" || left.current) return;
     left.current = true;
     sessionStorage.removeItem(POST_AUTH_KEY);
-    navigate({ to: target, replace: true });
+    navigate({ href: target, replace: true });
   }, [status, target, navigate]);
 
   function switchMode(m: Mode) {
