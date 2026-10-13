@@ -28,7 +28,7 @@ export function SiteHeader() {
               <>
                 <Link to="/my-posts" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Posts</Link>
                 <Link to="/my-bids" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>My Bids</Link>
-                <Link to="/verify" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Get verified</Link>
+                <Link to="/verify" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Get Verified</Link>
                 {isAdmin && (
                   <>
                     <Link to="/admin/verifications" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Review</Link>
