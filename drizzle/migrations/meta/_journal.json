@@ -120,6 +120,20 @@
       "when": 1791572327410,
       "tag": "0016_bid_payment_card_release",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792177253928,
+      "tag": "0017_feedback_insert_checks",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792177271710,
+      "tag": "0018_feedback_insert_status_fix",
+      "breakpoints": true
     }
   ]
 }
