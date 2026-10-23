@@ -26,4 +26,4 @@
 
 - [x] Sign-in reliability fix (loading state, Google return, reset password, safe redirects)
 
-- [ ] Stripe: after user reconnects Payments to the Meant To Beam LLC account, recreate the $25 and $5 products, add payment_intent events to sandbox + live webhooks, retest both flows (blocked on user disconnect/reconnect)
+- [ ] Stripe go-live with Meant To Beam LLC account, then add payment_intent events to live webhook + publish (blocked on user go-live)
